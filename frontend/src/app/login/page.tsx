@@ -16,6 +16,7 @@ export default function LoginPage() {
       const res = await fetch('http://localhost:3333/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 
@@ -26,7 +27,6 @@ export default function LoginPage() {
       }
 
       const data = await res.json();
-      localStorage.setItem('token', data.access_token);
       setErrorMessage('');
       router.push('/dashboard');
     } catch (error) {

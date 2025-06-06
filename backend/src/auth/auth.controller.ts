@@ -1,21 +1,45 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
+import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
+import { AuthService } from "./auth.service";
+import { RegisterDto } from "./dto/register.dto";
+import { LoginDto } from "./dto/login.dto";
+import { Response } from "express";
+import { Res } from "@nestjs/common";
 
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('register')
+  @Post("register")
   async register(@Body() dto: RegisterDto) {
     await this.authService.register(dto);
-    return { message: 'registered' };
+    return { message: "registered" };
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('login')
-  async login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+  @Post("login")
+  async login(
+    @Body() dto: LoginDto,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const { access_token } = await this.authService.login(dto);
+
+    res.cookie("token", access_token, {
+      httpOnly: true, 
+      secure: false,
+      path: "/",
+      maxAge: 1000 * 60 * 60 * 24, 
+    });
+
+    return { message: "Logged in" };
   }
+
+  @Post('logout')
+@HttpCode(HttpStatus.OK)
+logout(@Res({ passthrough: true }) res: Response) {
+  res.clearCookie('token', {
+    path: '/', 
+  });
+
+  return { message: 'Logged out' };
+}
 }

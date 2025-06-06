@@ -17,21 +17,35 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const register_dto_1 = require("./dto/register.dto");
 const login_dto_1 = require("./dto/login.dto");
+const common_2 = require("@nestjs/common");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
     async register(dto) {
         await this.authService.register(dto);
-        return { message: 'registered' };
+        return { message: "registered" };
     }
-    async login(dto) {
-        return this.authService.login(dto);
+    async login(dto, res) {
+        const { access_token } = await this.authService.login(dto);
+        res.cookie("token", access_token, {
+            httpOnly: true,
+            secure: false,
+            path: "/",
+            maxAge: 1000 * 60 * 60 * 24,
+        });
+        return { message: "Logged in" };
+    }
+    logout(res) {
+        res.clearCookie('token', {
+            path: '/',
+        });
+        return { message: 'Logged out' };
     }
 };
 exports.AuthController = AuthController;
 __decorate([
-    (0, common_1.Post)('register'),
+    (0, common_1.Post)("register"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [register_dto_1.RegisterDto]),
@@ -39,13 +53,22 @@ __decorate([
 ], AuthController.prototype, "register", null);
 __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, common_1.Post)('login'),
+    (0, common_1.Post)("login"),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_2.Res)({ passthrough: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [login_dto_1.LoginDto]),
+    __metadata("design:paramtypes", [login_dto_1.LoginDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Post)('logout'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_2.Res)({ passthrough: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "logout", null);
 exports.AuthController = AuthController = __decorate([
-    (0, common_1.Controller)('auth'),
+    (0, common_1.Controller)("auth"),
     __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], AuthController);
