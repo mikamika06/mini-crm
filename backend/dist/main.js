@@ -43,6 +43,7 @@ const dotenv_1 = require("dotenv");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.useGlobalPipes(new common_1.ValidationPipe());
-    await app.listen(3000);
+    app.enableCors();
+    await app.listen(3333);
 }
 bootstrap();
