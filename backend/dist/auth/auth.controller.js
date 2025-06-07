@@ -37,10 +37,10 @@ let AuthController = class AuthController {
         return { message: "Logged in" };
     }
     logout(res) {
-        res.clearCookie('token', {
-            path: '/',
+        res.clearCookie("token", {
+            path: "/",
         });
-        return { message: 'Logged out' };
+        return { message: "Logged out" };
     }
 };
 exports.AuthController = AuthController;
@@ -61,7 +61,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
-    (0, common_1.Post)('logout'),
+    (0, common_1.Post)("logout"),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_2.Res)({ passthrough: true })),
     __metadata("design:type", Function),

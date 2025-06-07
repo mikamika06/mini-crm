@@ -24,22 +24,22 @@ export class AuthController {
     const { access_token } = await this.authService.login(dto);
 
     res.cookie("token", access_token, {
-      httpOnly: true, 
+      httpOnly: true,
       secure: false,
       path: "/",
-      maxAge: 1000 * 60 * 60 * 24, 
+      maxAge: 1000 * 60 * 60 * 24,
     });
 
     return { message: "Logged in" };
   }
 
-  @Post('logout')
-@HttpCode(HttpStatus.OK)
-logout(@Res({ passthrough: true }) res: Response) {
-  res.clearCookie('token', {
-    path: '/', 
-  });
+  @Post("logout")
+  @HttpCode(HttpStatus.OK)
+  logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie("token", {
+      path: "/",
+    });
 
-  return { message: 'Logged out' };
-}
+    return { message: "Logged out" };
+  }
 }
