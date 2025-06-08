@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Delete, Param, UseGuards, Req } from '@nestjs/common';
 import { JwtGuard } from '../auth/jwt.guard';
 import { ClientService } from './client.service';
-import { Request } from 'express';
 import { GetUser } from '../auth/get-user.decorator';
 
 @UseGuards(JwtGuard)

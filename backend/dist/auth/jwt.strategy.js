@@ -16,7 +16,17 @@ const passport_jwt_1 = require("passport-jwt");
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     constructor() {
         super({
-            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+            jwtFromRequest: (req) => {
+                var _a, _b;
+                const cookie = (_a = req === null || req === void 0 ? void 0 : req.headers) === null || _a === void 0 ? void 0 : _a.cookie;
+                if (!cookie)
+                    return null;
+                const token = (_b = cookie
+                    .split(';')
+                    .find(c => c.trim().startsWith('token='))) === null || _b === void 0 ? void 0 : _b.split('=')[1];
+                return token || null;
+            },
+            ignoreExpiration: false,
             secretOrKey: process.env.JWT_SECRET,
         });
     }
