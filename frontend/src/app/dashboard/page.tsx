@@ -1,29 +1,56 @@
 'use client';
 
-import LogoutButton from '../../components/LogoutButton'; 
-
 import { useEffect, useState } from 'react';
+import InvoiceTable from '@/components/InvoiceTable';
 
 export default function DashboardPage() {
-  const [token, setToken] = useState<string | null>(null);
+  const [invoices, setInvoices] = useState<any[]>([]);
+
+  const fetchInvoices = async () => {
+    try {
+      const res = await fetch('http://localhost:3333/invoices', {
+        credentials: 'include',
+      });
+
+      const data = await res.json();
+
+      if (Array.isArray(data)) {
+        setInvoices(data);
+      } else {
+        console.error('Received non-array response:', data);
+        setInvoices([]); 
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+      setInvoices([]); 
+    }
+  };
 
   useEffect(() => {
-  const cookieToken = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('token='))
-    ?.split('=')[1];
+    fetchInvoices();
+  }, []);
 
-  setToken(cookieToken || null);
-}, []);
+  const safeInvoices = Array.isArray(invoices) ? invoices : [];
 
+  const paidTotal = safeInvoices
+    .filter(i => i && typeof i.paid === 'boolean' && i.paid)
+    .reduce((sum, i) => sum + (typeof i.amount === 'number' ? i.amount : 0), 0);
+
+  const unpaidTotal = safeInvoices
+    .filter(i => i && typeof i.paid === 'boolean' && !i.paid)
+    .reduce((sum, i) => sum + (typeof i.amount === 'number' ? i.amount : 0), 0);
 
   return (
-    <div className="p-8">
+    <div className="p-8 space-y-6">
       <h1 className="text-2xl font-bold">Dashboard</h1>
-      <p className="mt-2">Token: <code>{token}</code></p>
-      <div className="mt-4">
-        <LogoutButton />
+
+      <div className="flex gap-8 text-lg">
+        <div>📦 Total Invoices: {safeInvoices.length}</div>
+        <div>✅ Paid Total: ${paidTotal.toFixed(2)}</div>
+        <div>❌ Unpaid Total: ${unpaidTotal.toFixed(2)}</div>
       </div>
+
+      <InvoiceTable invoices={safeInvoices.slice(0, 5)} />
     </div>
   );
 }

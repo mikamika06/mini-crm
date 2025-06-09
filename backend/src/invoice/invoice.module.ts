@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ClientController } from './client.controller';
-import { ClientService } from './client.service';
+import { InvoiceController } from './invoice.controller';
+import { InvoiceService } from './invoice.service';
 import { PrismaModule } from '../prisma/prisma.module'; 
 import { AuthModule } from '../auth/auth.module'; // Import AuthModule to use authentication features
 
-
 @Module({
   imports: [PrismaModule, AuthModule],
-  controllers: [ClientController],
-  providers: [ClientService]
+  controllers: [InvoiceController],
+  providers: [InvoiceService]
 })
-export class ClientModule {}
+export class InvoiceModule {}

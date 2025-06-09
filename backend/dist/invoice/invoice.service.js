@@ -9,31 +9,44 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ClientService = void 0;
+exports.InvoiceService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
-let ClientService = class ClientService {
+let InvoiceService = class InvoiceService {
     constructor(prisma) {
         this.prisma = prisma;
     }
     findAll(userId) {
-        return this.prisma.client.findMany({
+        return this.prisma.invoice.findMany({
             where: { userId },
+            include: { client: true },
             orderBy: { id: 'desc' },
         });
     }
     create(data, userId) {
-        return this.prisma.client.create({
+        return this.prisma.invoice.create({
             data: {
-                name: data.name,
-                email: data.email,
-                company: data.company,
+                amount: data.amount,
+                dueDate: data.dueDate,
+                paid: false,
+                clientId: data.clientId,
                 userId,
             },
         });
     }
+    markPaid(id, userId) {
+        return this.prisma.invoice.updateMany({
+            where: {
+                id,
+                userId,
+            },
+            data: {
+                paid: true,
+            },
+        });
+    }
     remove(id, userId) {
-        return this.prisma.client.deleteMany({
+        return this.prisma.invoice.deleteMany({
             where: {
                 id,
                 userId,
@@ -41,8 +54,8 @@ let ClientService = class ClientService {
         });
     }
 };
-exports.ClientService = ClientService;
-exports.ClientService = ClientService = __decorate([
+exports.InvoiceService = InvoiceService;
+exports.InvoiceService = InvoiceService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
-], ClientService);
+], InvoiceService);

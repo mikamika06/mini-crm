@@ -5,10 +5,6 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ClientService {
   constructor(private prisma: PrismaService) {}
 
-  create(data: { name: string; email: string; company?: string; userId: number }) {
-    return this.prisma.client.create({ data });
-  }
-
   findAll(userId: number) {
     return this.prisma.client.findMany({
       where: { userId },
@@ -16,9 +12,23 @@ export class ClientService {
     });
   }
 
-  delete(id: number, userId: number) {
+  create(data: any, userId: number) {
+    return this.prisma.client.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        company: data.company,
+        userId,
+      },
+    });
+  }
+
+  remove(id: number, userId: number) {
     return this.prisma.client.deleteMany({
-      where: { id, userId },
+      where: {
+        id,
+        userId,
+      },
     });
   }
 }

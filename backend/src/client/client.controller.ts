@@ -1,6 +1,14 @@
-import { Controller, Get, Post, Body, Delete, Param, UseGuards, Req } from '@nestjs/common';
-import { JwtGuard } from '../auth/jwt.guard';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Delete,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { ClientService } from './client.service';
+import { JwtGuard } from '../auth/jwt.guard';
 import { GetUser } from '../auth/get-user.decorator';
 
 @UseGuards(JwtGuard)
@@ -8,18 +16,19 @@ import { GetUser } from '../auth/get-user.decorator';
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
-  @Post()
- create(@Body() dto: any, @GetUser() user: { id: number }) {
-  return this.clientService.create({ ...dto, userId: user.id });
-}
-
   @Get()
   findAll(@GetUser() user: { id: number }) {
     return this.clientService.findAll(user.id);
   }
 
+  @Post()
+  create(@Body() body: any, @GetUser() user: { id: number }) {
+    return this.clientService.create(body, user.id);
+  }
+  
+
   @Delete(':id')
-  delete(@Param('id') id: string, @GetUser() user: { id: number }) {
-    return this.clientService.delete(+id, user.id);
+  remove(@Param('id') id: string, @GetUser() user: { id: number }) {
+    return this.clientService.remove(+id, user.id);
   }
 }

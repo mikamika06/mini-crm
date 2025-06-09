@@ -7,7 +7,6 @@ export default function ClientTable({
   clients: any[];
   onDelete: (id: number) => void;
 }) {
-  // Фільтрація тільки валідних об'єктів
   const validClients = Array.isArray(clients)
     ? clients.filter(
         (c) =>

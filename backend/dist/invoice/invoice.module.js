@@ -6,18 +6,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppModule = void 0;
+exports.InvoiceModule = void 0;
 const common_1 = require("@nestjs/common");
-const auth_module_1 = require("./auth/auth.module");
-const user_controller_1 = require("./user.controller");
-const client_module_1 = require("./client/client.module");
-const invoice_module_1 = require("./invoice/invoice.module");
-let AppModule = class AppModule {
+const invoice_controller_1 = require("./invoice.controller");
+const invoice_service_1 = require("./invoice.service");
+const prisma_module_1 = require("../prisma/prisma.module");
+const auth_module_1 = require("../auth/auth.module"); // Import AuthModule to use authentication features
+let InvoiceModule = class InvoiceModule {
 };
-exports.AppModule = AppModule;
-exports.AppModule = AppModule = __decorate([
+exports.InvoiceModule = InvoiceModule;
+exports.InvoiceModule = InvoiceModule = __decorate([
     (0, common_1.Module)({
-        imports: [auth_module_1.AuthModule, client_module_1.ClientModule, invoice_module_1.InvoiceModule],
-        controllers: [user_controller_1.UserController],
+        imports: [prisma_module_1.PrismaModule, auth_module_1.AuthModule],
+        controllers: [invoice_controller_1.InvoiceController],
+        providers: [invoice_service_1.InvoiceService]
     })
-], AppModule);
+], InvoiceModule);

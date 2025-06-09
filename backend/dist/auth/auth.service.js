@@ -75,7 +75,7 @@ let AuthService = class AuthService {
                 throw new common_1.UnauthorizedException('Invalid credentials');
             }
             const token = await this.jwt.signAsync({
-                sub: user.id,
+                id: user.id,
                 email: user.email,
             });
             return { access_token: token };

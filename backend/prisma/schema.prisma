@@ -20,6 +20,7 @@ model User {
   password String
   name     String
   clients  Client[]
+  invoices Invoice[] 
 }
 
 model Client {
@@ -29,4 +30,18 @@ model Client {
   company String?
   user    User   @relation(fields: [userId], references: [id])
   userId  Int
+  invoices Invoice[] 
+}
+
+model Invoice {
+  id        Int      @id @default(autoincrement())
+  amount    Float
+  dueDate   DateTime
+  paid      Boolean  @default(false)
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+
+  client    Client   @relation(fields: [clientId], references: [id])
+  clientId  Int
 }
