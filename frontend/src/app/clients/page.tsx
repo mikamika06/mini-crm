@@ -12,7 +12,7 @@ export default function ClientsPage() {
     });
     const data = await res.json();
     console.log(data); 
-    setClients(data);
+      setClients(data);
   };
 
   useEffect(() => {
