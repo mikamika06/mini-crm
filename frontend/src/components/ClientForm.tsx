@@ -1,41 +1,60 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
+import { Client } from "../app/types";
 
-export default function ClientForm({ onCreate }: { onCreate: (client: any) => void }) {
-  const [form, setForm] = useState({ name: '', email: '', company: '' });
+export default function InvoiceForm({
+  clients,
+  onCreate,
+}: {
+  clients: Client[];
+  onCreate: (dto: any) => void;
+}) {
+  const [form, setForm] = useState({
+    clientId: clients[0]?.id ?? 0,
+    amount: 0,
+    dueDate: new Date().toISOString().slice(0, 10),
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    onCreate(form);
-    setForm({ name: '', email: '', company: '' });
+    onCreate({ ...form, amount: Number(form.amount) });
+    setForm({ ...form, amount: 0 });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-4 items-end">
+    <form className="flex flex-wrap gap-4 items-end" onSubmit={submit}>
+      <select
+        className="border p-2 rounded-lg"
+        value={form.clientId}
+        onChange={(e) => setForm({ ...form, clientId: Number(e.target.value) })}
+      >
+        {clients.map((c) => (
+          <option key={c.id} value={c.id}>
+            {c.name}
+          </option>
+        ))}
+      </select>
+
       <input
-        className="border p-2 rounded"
-        placeholder="Name"
-        value={form.name}
-        onChange={e => setForm({ ...form, name: e.target.value })}
+        type="number"
+        placeholder="Amount"
+        className="border p-2 rounded-lg"
+        value={form.amount}
+        onChange={(e) => setForm({ ...form, amount: Number(e.target.value) })}
         required
       />
+
       <input
-        className="border p-2 rounded"
-        placeholder="Email"
-        type="email"
-        value={form.email}
-        onChange={e => setForm({ ...form, email: e.target.value })}
+        type="date"
+        className="border p-2 rounded-lg"
+        value={form.dueDate}
+        onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
         required
       />
-      <input
-        className="border p-2 rounded"
-        placeholder="Company"
-        value={form.company}
-        onChange={e => setForm({ ...form, company: e.target.value })}
-      />
-      <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        Add
+
+      <button className="bg-brand text-white px-4 py-2 rounded-lg hover:bg-brand/90">
+        Save
       </button>
     </form>
   );

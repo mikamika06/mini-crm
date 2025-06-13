@@ -2,13 +2,17 @@
 
 import { useRouter } from 'next/navigation';
 
-export default function LogoutButton() {
+type LogoutButtonProps = {
+  className?: string;
+};
+
+export default function LogoutButton({ className = "" }: LogoutButtonProps) {
   const router = useRouter();
 
   const logout = async () => {
     await fetch('http://localhost:3333/auth/logout', {
       method: 'POST',
-      credentials: 'include', 
+      credentials: 'include',
     });
 
     router.push('/login');
@@ -17,7 +21,7 @@ export default function LogoutButton() {
   return (
     <button
       onClick={logout}
-      className="text-red-600 underline hover:text-red-800"
+      className={`text-red-600 underline hover:text-red-800 ${className}`}
     >
       Logout
     </button>

@@ -50,7 +50,16 @@ export default function DashboardPage() {
         <div>❌ Unpaid Total: ${unpaidTotal.toFixed(2)}</div>
       </div>
 
-      <InvoiceTable invoices={safeInvoices.slice(0, 5)} />
+      <InvoiceTable
+        invoices={safeInvoices.slice(0, 5)}
+        onMarkPaid={(id: number) => {
+          setInvoices(prev =>
+            prev.map(inv =>
+              inv.id === id ? { ...inv, paid: true } : inv
+            )
+          );
+        }}
+      />
     </div>
   );
 }

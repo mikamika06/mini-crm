@@ -40,7 +40,7 @@ export default function ClientsPage() {
   return (
     <div className="p-8 space-y-6">
       <h1 className="text-2xl font-bold">Clients</h1>
-      <ClientForm onCreate={handleCreate} />
+      <ClientForm clients={clients} onCreate={handleCreate} />
       <ClientTable clients={clients} onDelete={handleDelete} />
     </div>
   );

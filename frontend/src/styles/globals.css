@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+:root {
+  --brand: #2563eb;
+}
+
+body {
+  @apply text-gray-800 bg-gray-50;
+}
+
+.text-brand {
+  color: var(--brand);
+}
+
+.bg-brand\/10 {
+  background-color: rgba(37, 99, 235, 0.1);
+}
+
+/* Brand utility */
+.text-brand {
+  color: var(--brand);
+}
+
+/* Scrollbar nicer */
+::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full;
+}
