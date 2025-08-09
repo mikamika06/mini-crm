@@ -10,15 +10,14 @@ exports.InvoiceModule = void 0;
 const common_1 = require("@nestjs/common");
 const invoice_controller_1 = require("./invoice.controller");
 const invoice_service_1 = require("./invoice.service");
-const prisma_module_1 = require("../prisma/prisma.module");
-const auth_module_1 = require("../auth/auth.module"); // Import AuthModule to use authentication features
+const auth_module_1 = require("../auth/auth.module");
 let InvoiceModule = class InvoiceModule {
 };
 exports.InvoiceModule = InvoiceModule;
 exports.InvoiceModule = InvoiceModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, auth_module_1.AuthModule],
+        imports: [auth_module_1.AuthModule],
         controllers: [invoice_controller_1.InvoiceController],
-        providers: [invoice_service_1.InvoiceService]
+        providers: [invoice_service_1.InvoiceService],
     })
 ], InvoiceModule);

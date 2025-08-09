@@ -1,4 +1,16 @@
 {
+  "name": "backend",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:prod": "node dist/main",
+    "build": "tsc -p tsconfig.build.json",
+    "db:migrate": "npx prisma migrate dev",
+    "db:generate": "npx prisma generate",
+    "db:studio": "npx prisma studio",
+    "db:seed": "npx prisma db seed"
+  },
   "dependencies": {
     "@nestjs/common": "^11.1.2",
     "@nestjs/config": "^4.0.2",
@@ -16,14 +28,12 @@
     "passport-jwt": "^4.0.1",
     "prisma": "^6.9.0"
   },
-  "scripts": {
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "build": "tsc -p tsconfig.build.json"
-  },
   "devDependencies": {
+    "@nestjs/cli": "^11.0.0",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.9",
-    "@types/passport-jwt": "^4.0.1"
+    "@types/node": "^20.0.0",
+    "@types/passport-jwt": "^4.0.1",
+    "typescript": "^5.0.0"
   }
 }

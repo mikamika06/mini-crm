@@ -5,9 +5,11 @@ import { Invoice } from "../app/types";
 export default function InvoiceTable({
   invoices,
   onMarkPaid,
+  onDelete,
 }: {
   invoices: Invoice[];
   onMarkPaid: (id: number) => void;
+  onDelete: (id: number) => void;
 }) {
   if (!invoices.length)
     return <div className="text-gray-500">No invoices.</div>;
@@ -21,6 +23,7 @@ export default function InvoiceTable({
           <th className="px-4 py-3">Amount</th>
           <th className="px-4 py-3">Due</th>
           <th className="px-4 py-3">Status</th>
+          <th className="px-4 py-3">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -36,11 +39,19 @@ export default function InvoiceTable({
               ) : (
                 <button
                   onClick={() => onMarkPaid(inv.id)}
-                  className="text-red-600 hover:underline"
+                  className="text-blue-600 hover:underline mr-2"
                 >
                   Mark as paid
                 </button>
               )}
+            </td>
+            <td className="px-4 py-2">
+              <button
+                onClick={() => onDelete(inv.id)}
+                className="text-red-600 hover:underline"
+              >
+                Delete
+              </button>
             </td>
           </tr>
         ))}

@@ -1,12 +1,9 @@
-import path from "path";
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  webpack(config) {
-    //    alias  @   →   <root>/src
-    config.resolve.alias["@"] = path.resolve(__dirname, "src");
-    return config;
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  images: {
+    domains: ['i.pravatar.cc'],
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

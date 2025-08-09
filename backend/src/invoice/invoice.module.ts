@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { InvoiceController } from './invoice.controller';
 import { InvoiceService } from './invoice.service';
-import { PrismaModule } from '../prisma/prisma.module'; 
-import { AuthModule } from '../auth/auth.module'; // Import AuthModule to use authentication features
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule],
+  imports: [AuthModule],
   controllers: [InvoiceController],
-  providers: [InvoiceService]
+  providers: [InvoiceService],
 })
 export class InvoiceModule {}

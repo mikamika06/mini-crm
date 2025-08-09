@@ -2,10 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
 import { Request } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private config: ConfigService) {
+    const secret = config.get('JWT_SECRET');
+    if (!secret) {
+      throw new Error('JWT_SECRET is not defined');
+    }
+    
     super({
       jwtFromRequest: (req: Request) => {
         const cookie = req?.headers?.cookie;
@@ -19,11 +25,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         return token || null;
       },
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET as string,
+      secretOrKey: secret,
     });
   }
 
-  async validate(payload: { sub: number; email: string }) {
-    return { id: payload.sub, email: payload.email };
+  async validate(payload: { id: number; email: string }) {
+    return { id: payload.id, email: payload.email };
   }
 }

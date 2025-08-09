@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const invoice_service_1 = require("./invoice.service");
 const jwt_guard_1 = require("../auth/jwt.guard");
 const get_user_decorator_1 = require("../auth/get-user.decorator");
+const create_invoice_dto_1 = require("./dto/create-invoice.dto");
 let InvoiceController = class InvoiceController {
     constructor(invoiceService) {
         this.invoiceService = invoiceService;
@@ -24,8 +25,8 @@ let InvoiceController = class InvoiceController {
     findAll(user) {
         return this.invoiceService.findAll(user.id);
     }
-    create(body, user) {
-        return this.invoiceService.create(body, user.id);
+    create(createInvoiceDto, user) {
+        return this.invoiceService.create(createInvoiceDto, user.id);
     }
     markPaid(id, user) {
         return this.invoiceService.markPaid(+id, user.id);
@@ -47,7 +48,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, get_user_decorator_1.GetUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [create_invoice_dto_1.CreateInvoiceDto, Object]),
     __metadata("design:returntype", void 0)
 ], InvoiceController.prototype, "create", null);
 __decorate([

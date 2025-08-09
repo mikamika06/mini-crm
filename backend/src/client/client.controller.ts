@@ -10,6 +10,7 @@ import {
 import { ClientService } from './client.service';
 import { JwtGuard } from '../auth/jwt.guard';
 import { GetUser } from '../auth/get-user.decorator';
+import { CreateClientDto } from './dto/create-client.dto';
 
 @UseGuards(JwtGuard)
 @Controller('clients')
@@ -22,10 +23,9 @@ export class ClientController {
   }
 
   @Post()
-  create(@Body() body: any, @GetUser() user: { id: number }) {
-    return this.clientService.create(body, user.id);
+  create(@Body() createClientDto: CreateClientDto, @GetUser() user: { id: number }) {
+    return this.clientService.create(createClientDto, user.id);
   }
-  
 
   @Delete(':id')
   remove(@Param('id') id: string, @GetUser() user: { id: number }) {

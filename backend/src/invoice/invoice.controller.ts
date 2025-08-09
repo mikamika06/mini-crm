@@ -11,6 +11,7 @@ import {
 import { InvoiceService } from './invoice.service';
 import { JwtGuard } from '../auth/jwt.guard';
 import { GetUser } from '../auth/get-user.decorator';
+import { CreateInvoiceDto } from './dto/create-invoice.dto';
 
 @UseGuards(JwtGuard)
 @Controller('invoices')
@@ -23,8 +24,8 @@ export class InvoiceController {
   }
 
   @Post()
-  create(@Body() body: any, @GetUser() user: { id: number }) {
-    return this.invoiceService.create(body, user.id);
+  create(@Body() createInvoiceDto: CreateInvoiceDto, @GetUser() user: { id: number }) {
+    return this.invoiceService.create(createInvoiceDto, user.id);
   }
 
   @Patch(':id/pay')

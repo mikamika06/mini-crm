@@ -1,10 +1,12 @@
 'use client';
 
+import { Client } from '@/app/types';
+
 export default function ClientTable({
   clients,
   onDelete,
 }: {
-  clients: any[];
+  clients: Client[];
   onDelete: (id: number) => void;
 }) {
   const validClients = Array.isArray(clients)
@@ -18,36 +20,63 @@ export default function ClientTable({
     : [];
 
   if (validClients.length === 0) {
-    return <div className="text-gray-500 mt-4">No clients found or invalid data.</div>;
+    return (
+      <div className="bg-white rounded-lg shadow-md border p-8 text-center">
+        <div className="text-gray-400 mb-2">No clients found</div>
+        <p className="text-sm text-gray-500">Create your first client to get started.</p>
+      </div>
+    );
   }
 
   return (
-    <table className="w-full border mt-4">
-      <thead>
-        <tr className="bg-gray-100 text-left">
-          <th className="p-2">Name</th>
-          <th className="p-2">Email</th>
-          <th className="p-2">Company</th>
-          <th className="p-2">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {validClients.map((client) => (
-          <tr key={client.id} className="border-t">
-            <td className="p-2">{client.name}</td>
-            <td className="p-2">{client.email}</td>
-            <td className="p-2">{client.company || '-'}</td>
-            <td className="p-2">
-              <button
-                className="text-red-600 hover:underline"
-                onClick={() => onDelete(client.id)}
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="bg-white rounded-lg shadow-md border overflow-hidden">
+      <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <h3 className="text-lg font-semibold text-gray-900">Clients</h3>
+      </div>
+      
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Name
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Email
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Company
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {validClients.map((client, index) => (
+              <tr key={client.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm font-medium text-gray-900">{client.name}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-600">{client.email}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-600">{client.company || '-'}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <button
+                    className="text-red-600 hover:text-red-800 font-medium transition-colors"
+                    onClick={() => onDelete(client.id)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }

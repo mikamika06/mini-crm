@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const client_service_1 = require("./client.service");
 const jwt_guard_1 = require("../auth/jwt.guard");
 const get_user_decorator_1 = require("../auth/get-user.decorator");
+const create_client_dto_1 = require("./dto/create-client.dto");
 let ClientController = class ClientController {
     constructor(clientService) {
         this.clientService = clientService;
@@ -24,8 +25,8 @@ let ClientController = class ClientController {
     findAll(user) {
         return this.clientService.findAll(user.id);
     }
-    create(body, user) {
-        return this.clientService.create(body, user.id);
+    create(createClientDto, user) {
+        return this.clientService.create(createClientDto, user.id);
     }
     remove(id, user) {
         return this.clientService.remove(+id, user.id);
@@ -44,7 +45,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, get_user_decorator_1.GetUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [create_client_dto_1.CreateClientDto, Object]),
     __metadata("design:returntype", void 0)
 ], ClientController.prototype, "create", null);
 __decorate([
