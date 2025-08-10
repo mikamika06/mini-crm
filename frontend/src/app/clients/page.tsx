@@ -15,7 +15,7 @@ export default function ClientsPage() {
   const fetchClients = async () => {
     try {
       setIsLoading(true);
-      const res = await fetchWithAuth('http://localhost:3333/clients');
+        const res = await fetchWithAuth('/clients');
       
       if (!res.ok) {
         throw new Error('Failed to load clients');

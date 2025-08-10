@@ -40,7 +40,7 @@ export default function InvoiceForm({ onInvoiceCreated }: InvoiceFormProps) {
     setError('');
 
     try {
-      const response = await fetchWithAuth('http://localhost:3333/invoices', {
+      const response = await fetchWithAuth('/invoices', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

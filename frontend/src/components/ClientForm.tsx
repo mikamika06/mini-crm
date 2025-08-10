@@ -22,7 +22,7 @@ export default function ClientForm({ onClientCreated }: ClientFormProps) {
     setError('');
 
     try {
-      const response = await fetchWithAuth('http://localhost:3333/clients', {
+      const response = await fetchWithAuth('/clients', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
