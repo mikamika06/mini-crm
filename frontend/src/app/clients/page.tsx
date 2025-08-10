@@ -42,7 +42,7 @@ export default function ClientsPage() {
 
   const handleDelete = async (id: number) => {
     try {
-      const res = await fetchWithAuth(`http://localhost:3333/clients/${id}`, {
+      const res = await fetchWithAuth(`/clients/${id}`, {
         method: 'DELETE',
       });
       

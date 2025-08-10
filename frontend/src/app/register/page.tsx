@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { fetchWithAuth } from '@/app/utils/fetchWithAuth';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -31,7 +32,7 @@ export default function RegisterPage() {
     }
 
     try {
-      const res = await fetch('http://localhost:3333/auth/register', {
+      const res = await fetchWithAuth('/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

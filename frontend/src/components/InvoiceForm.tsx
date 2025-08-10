@@ -24,7 +24,7 @@ export default function InvoiceForm({ onInvoiceCreated }: InvoiceFormProps) {
 
   const fetchClients = async () => {
     try {
-      const response = await fetchWithAuth('http://localhost:3333/clients');
+      const response = await fetchWithAuth('/clients');
       if (response.ok) {
         const data = await response.json();
         setClients(data);

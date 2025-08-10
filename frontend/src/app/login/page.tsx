@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { fetchWithAuth } from '@/app/utils/fetchWithAuth';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -15,10 +16,9 @@ export default function LoginPage() {
     setErrorMessage('');
 
     try {
-      const res = await fetch('http://localhost:3333/auth/login', {
+      const res = await fetchWithAuth('/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 

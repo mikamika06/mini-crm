@@ -1,6 +1,7 @@
 'use client';
 
 import { LogOut } from 'lucide-react';
+import { fetchWithAuth } from '@/app/utils/fetchWithAuth';
 
 type LogoutButtonProps = {
   className?: string;
@@ -10,9 +11,8 @@ export default function LogoutButton({ className = "" }: LogoutButtonProps) {
 
   const logout = async () => {
     try {
-      await fetch('http://localhost:3333/auth/logout', {
+      await fetchWithAuth('/auth/logout', {
         method: 'POST',
-        credentials: 'include',
       });
     } catch (error) {
       console.error('Logout error:', error);

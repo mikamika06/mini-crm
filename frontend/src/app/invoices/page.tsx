@@ -15,7 +15,7 @@ export default function InvoicesPage() {
   const fetchInvoices = async () => {
     try {
       setLoading(true);
-      const response = await fetchWithAuth('http://localhost:3333/invoices');
+      const response = await fetchWithAuth('/invoices');
       if (response.ok) {
         const data = await response.json();
         setInvoices(data);
@@ -41,7 +41,7 @@ export default function InvoicesPage() {
 
   const handleMarkPaid = async (id: number) => {
     try {
-      const response = await fetchWithAuth(`http://localhost:3333/invoices/${id}/pay`, {
+      const response = await fetchWithAuth(`/invoices/${id}/pay`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export default function InvoicesPage() {
 
   const handleDeleteInvoice = async (id: number) => {
     try {
-      const response = await fetchWithAuth(`http://localhost:3333/invoices/${id}`, {
+      const response = await fetchWithAuth(`/invoices/${id}`, {
         method: 'DELETE',
       });
       if (response.ok) {

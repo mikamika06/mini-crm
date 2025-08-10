@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { fetchWithAuth } from '@/app/utils/fetchWithAuth';
 import Sidebar from '@/components/Sidebar';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
@@ -17,12 +18,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const checkAuth = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('http://localhost:3333/user/me', {
-          credentials: 'include',
-          headers: {
-            'Cache-Control': 'no-cache',
-          },
-        });
+        const response = await fetchWithAuth('/user/me');
         
         const authenticated = response.ok;
         setIsAuthenticated(authenticated);

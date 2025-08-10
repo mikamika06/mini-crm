@@ -28,8 +28,8 @@ export default function DashboardPage() {
     try {
       setLoading(true);
       const [invoicesRes, clientsRes] = await Promise.all([
-        fetchWithAuth('http://localhost:3333/invoices'),
-        fetchWithAuth('http://localhost:3333/clients'),
+        fetchWithAuth('/invoices'),
+        fetchWithAuth('/clients'),
       ]);
 
       const invoices: Invoice[] = invoicesRes.ok ? await invoicesRes.json() : [];
@@ -63,7 +63,7 @@ export default function DashboardPage() {
 
   const handleMarkPaid = async (id: number) => {
     try {
-      const response = await fetchWithAuth(`http://localhost:3333/invoices/${id}/pay`, {
+      const response = await fetchWithAuth(`/invoices/${id}/pay`, {
         method: 'PATCH',
       });
       if (response.ok) {
@@ -76,7 +76,7 @@ export default function DashboardPage() {
 
   const handleDeleteInvoice = async (id: number) => {
     try {
-      const response = await fetchWithAuth(`http://localhost:3333/invoices/${id}`, {
+      const response = await fetchWithAuth(`/invoices/${id}`, {
         method: 'DELETE',
       });
       if (response.ok) {
