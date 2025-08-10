@@ -28,6 +28,13 @@ jobs:
           cd backend
           npm run build
           
+      - name: Copy Prisma files to dist
+        run: |
+          cd backend
+          mkdir -p dist/prisma
+          cp -r prisma/* dist/prisma/
+          cp package*.json dist/
+          
       - name: Azure Login
         uses: azure/login@v1
         with:
