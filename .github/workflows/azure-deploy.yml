@@ -28,13 +28,6 @@ jobs:
           cd backend
           npm run build
           
-      - name: Run database migrations
-        run: |
-          cd backend
-          npx prisma migrate deploy
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          
       - name: Azure Login
         uses: azure/login@v1
         with:
