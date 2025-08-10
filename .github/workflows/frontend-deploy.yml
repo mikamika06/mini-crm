@@ -35,7 +35,6 @@ jobs:
           cp -r frontend/.next/standalone/* frontend-deploy/
           mkdir -p frontend-deploy/.next
           cp -r frontend/.next/static frontend-deploy/.next/
-          cp -r frontend/public frontend-deploy/
           cp frontend/package.json frontend-deploy/
           if [ -f frontend/next.config.js ]; then cp frontend/next.config.js frontend-deploy/; fi
 
