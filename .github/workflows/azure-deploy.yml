@@ -28,12 +28,14 @@ jobs:
           cd backend
           npm run build
           
-      - name: Copy Prisma files to dist
+      - name: Prepare deployment package
         run: |
           cd backend
-          mkdir -p dist/prisma
-          cp -r prisma/* dist/prisma/
-          cp package*.json dist/
+          mkdir -p deploy
+          cp -r dist/* deploy/
+          cp -r prisma deploy/
+          cp package*.json deploy/
+          cp -r node_modules deploy/
           
       - name: Azure Login
         uses: azure/login@v1
@@ -44,4 +46,4 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'mini-crm'
-          package: './backend'
+          package: './backend/deploy'
