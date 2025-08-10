@@ -29,6 +29,16 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: "https://mini-crm-e6behmfva5efhsch.westeurope-01.azurewebsites.net"
 
+      - name: Prepare deployment package
+        run: |
+          mkdir -p frontend-deploy
+          cp -r frontend/.next/standalone/* frontend-deploy/
+          mkdir -p frontend-deploy/.next
+          cp -r frontend/.next/static frontend-deploy/.next/
+          cp -r frontend/public frontend-deploy/
+          cp frontend/package.json frontend-deploy/
+          if [ -f frontend/next.config.js ]; then cp frontend/next.config.js frontend-deploy/; fi
+
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -38,4 +48,4 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'mini-crm-frontend'
-          package: './frontend'
+          package: './frontend-deploy'

@@ -23,7 +23,10 @@ async function bootstrap() {
     credentials: true,
   });
 
-  await app.listen(process.env.PORT || 8080);
-  console.log(`Application is running on: ${await app.getUrl()}`);
+  const port = process.env.PORT || 8080;
+  await app.listen(port, '0.0.0.0');
+  console.log(`Application is running on port: ${port}`);
+  console.log(`Environment: ${process.env.NODE_ENV}`);
+  console.log(`Database URL exists: ${!!process.env.DATABASE_URL}`);
 }
 bootstrap();
