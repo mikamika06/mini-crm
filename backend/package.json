@@ -2,9 +2,9 @@
   "name": "backend",
   "version": "1.0.0",
   "scripts": {
-    "start": "npx prisma migrate deploy && node dist/main",
+    "start": "node dist/main",
     "start:dev": "nest start --watch",
-    "start:prod": "npx prisma migrate deploy && node dist/main",
+    "start:prod": "node dist/main",
     "build": "tsc -p tsconfig.build.json",
     "db:migrate": "npx prisma migrate dev",
     "db:generate": "npx prisma generate",
