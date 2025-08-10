@@ -35,7 +35,6 @@ jobs:
           cp -r dist/* deploy/
           cp -r prisma deploy/
           cp package*.json deploy/
-          cp -r node_modules deploy/
           
       - name: Azure Login
         uses: azure/login@v1
