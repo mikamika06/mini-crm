@@ -42,4 +42,14 @@ export class AuthController {
 
     return { message: "Logged out" };
   }
+
+  @Post("test-db")
+  async testDb() {
+    try {
+      await this.authService.testDbConnection();
+      return { message: "Database connection successful" };
+    } catch (error: any) {
+      return { message: "Database connection failed", error: error.message };
+    }
+  }
 }

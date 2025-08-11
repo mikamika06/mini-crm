@@ -48,6 +48,11 @@ export class AuthService {
     console.error('Login error:', err); 
     throw err;
   }
-}
+  }
 
+  async testDbConnection() {
+    // Simple test to check if Prisma can connect to the database
+    await this.prisma.$queryRaw`SELECT 1`;
+    return true;
+  }
 }
