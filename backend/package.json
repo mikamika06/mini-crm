@@ -5,15 +5,17 @@
     "start": "node dist/main.js",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main.js",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "nest build && npx prisma generate",
+    "prebuild": "npx prisma generate",
     "db:migrate": "npx prisma migrate dev",
     "db:generate": "npx prisma generate",
     "db:studio": "npx prisma studio",
     "db:seed": "npx prisma db seed",
-    "postinstall": "prisma generate",
+    "postinstall": "npx prisma generate",
     "azure:start": "npm run start"
   },
   "dependencies": {
+    "@nestjs/cli": "^11.0.0",
     "@nestjs/common": "^11.1.2",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.2",
@@ -33,7 +35,6 @@
     "prisma": "^6.9.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^11.0.0",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.9",
     "@types/node": "^20.0.0",
