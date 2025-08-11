@@ -33,7 +33,7 @@ jobs:
           output_location: ".next" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
         env:
-          NEXT_PUBLIC_API_URL: https://mini-crm.azurewebsites.net
+          NEXT_PUBLIC_API_URL: https://mini-crm-e6behmfva5efhsch.westeurope-01.azurewebsites.net
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
