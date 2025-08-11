@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "scripts": {
-    "start": "node main",
+    "start": "node dist/main.js",
     "start:dev": "nest start --watch",
     "start:prod": "node main",
     "build": "tsc -p tsconfig.build.json",
@@ -10,7 +10,7 @@
     "db:generate": "npx prisma generate",
     "db:studio": "npx prisma studio",
     "db:seed": "npx prisma db seed",
-    "postinstall": "npm install -g prisma && prisma generate"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.2",

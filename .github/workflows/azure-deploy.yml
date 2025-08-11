@@ -28,13 +28,6 @@ jobs:
           cd backend
           npm run build
           
-      - name: Prepare deployment package
-        run: |
-          cd backend
-          mkdir -p deploy
-          cp -r dist deploy/
-          cp -r prisma deploy/
-          cp package*.json deploy/
         
           
       - name: Azure Login
@@ -46,4 +39,4 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'mini-crm'
-          package: './backend/deploy'
+          package: './backend'
