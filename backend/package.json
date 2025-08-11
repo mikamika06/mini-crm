@@ -2,16 +2,16 @@
   "name": "backend",
   "version": "1.0.0",
   "scripts": {
-    "start": "node dist/main.js",
+    "start": "prisma generate && prisma migrate deploy && node dist/main.js",
     "start:dev": "nest start --watch",
-    "start:prod": "node dist/main.js",
+    "start:prod": "prisma generate && prisma migrate deploy && node dist/main.js",
     "build": "tsc -p tsconfig.build.json",
     "db:migrate": "npx prisma migrate dev",
     "db:generate": "npx prisma generate",
     "db:studio": "npx prisma studio",
     "db:seed": "npx prisma db seed",
     "postinstall": "prisma generate",
-    "azure:start": "./startup.sh"
+    "azure:start": "npm run start"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.2",
