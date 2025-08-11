@@ -13,6 +13,17 @@ async function bootstrap() {
     console.log('NODE_ENV:', process.env.NODE_ENV);
     console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
     console.log('PORT:', process.env.PORT);
+
+    // Перевірка Prisma Client
+    try {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+      await prisma.$connect();
+      console.log('✅ Database connected successfully');
+      await prisma.$disconnect();
+    } catch (error: any) {
+      console.error('⚠️ Database connection warning:', error.message);
+    }
     
     const app = await NestFactory.create(AppModule);
 
