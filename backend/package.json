@@ -10,7 +10,7 @@
     "db:generate": "npx prisma generate",
     "db:studio": "npx prisma studio",
     "db:seed": "npx prisma db seed",
-    "postinstall": "prisma generate"
+    "postinstall": "npm install -g prisma && prisma generate"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.2",

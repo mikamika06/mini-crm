@@ -35,6 +35,12 @@ jobs:
           cp -r dist/* deploy/
           cp -r prisma deploy/
           cp package*.json deploy/
+            # Create a startup script that will install dependencies on Azure
+          echo '#!/bin/bash' > deploy/startup.sh
+          echo 'npm install --production' >> deploy/startup.sh
+          echo 'npm run postinstall' >> deploy/startup.sh
+          echo 'node main.js' >> deploy/startup.sh
+          chmod +x deploy/startup.sh
           
       - name: Azure Login
         uses: azure/login@v1
