@@ -11,7 +11,6 @@
     "db:generate": "npx prisma generate",
     "db:studio": "npx prisma studio",
     "db:seed": "npx prisma db seed",
-    "postinstall": "npx prisma generate",
     "azure:start": "npm run start"
   },
   "dependencies": {
