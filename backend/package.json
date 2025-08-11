@@ -11,7 +11,7 @@
     "db:studio": "npx prisma studio",
     "db:seed": "npx prisma db seed",
     "postinstall": "prisma generate",
-    "azure:start": "./startup.sh"
+    "azure:start": "npm run start"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.2",
