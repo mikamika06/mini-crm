@@ -32,20 +32,13 @@ export default function LoginPage() {
       console.log('Login response:', data); 
       
       if (data.access_token) {
-        const isProduction = process.env.NODE_ENV === 'production';
-        const cookieOptions = [
-          `token=${data.access_token}`,
-          'path=/',
-          `max-age=86400`,
-          `SameSite=${isProduction ? 'None' : 'Lax'}`,
-          isProduction ? 'Secure' : ''
-        ].filter(Boolean).join('; ');
-        
-        document.cookie = cookieOptions;
+        document.cookie = `token=${data.access_token}; path=/; max-age=86400; SameSite=Lax`;
         
         localStorage.setItem('token', data.access_token);
         
-        window.location.href = '/dashboard';
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 100);
       } else {
         setErrorMessage('Login successful but no token received');
       }

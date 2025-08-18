@@ -23,7 +23,8 @@ export function middleware(request: NextRequest) {
 
   const isPublicRoute = pathname === '/' || 
                        pathname === '/login' || 
-                       pathname === '/register';
+                       pathname === '/register' ||
+                       pathname === '/access-denied';
 
   const isProtectedRoute = pathname.startsWith('/dashboard') ||
                           pathname.startsWith('/clients') ||
