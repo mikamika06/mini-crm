@@ -46,3 +46,5 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_OCEAN_0C4B1BA1E }}
           action: "close"
+
+          
