@@ -42,6 +42,15 @@ let AuthController = class AuthController {
         });
         return { message: "Logged out" };
     }
+    async testDb() {
+        try {
+            await this.authService.testDbConnection();
+            return { message: "Database connection successful" };
+        }
+        catch (error) {
+            return { message: "Database connection failed", error: error.message };
+        }
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -68,6 +77,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "logout", null);
+__decorate([
+    (0, common_1.Post)("test-db"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "testDb", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)("auth"),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

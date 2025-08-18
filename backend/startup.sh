@@ -1,17 +1,15 @@
 #!/bin/bash
 
-echo "Starting Azure deployment process..."
+echo "Starting application..."
 
-export NODE_ENV=production
-
-echo "Installing dependencies..."
-npm ci --only=production
-
+# Generate Prisma Client
 echo "Generating Prisma Client..."
 npx prisma generate
 
+# Run migrations
 echo "Running database migrations..."
 npx prisma migrate deploy
 
-echo "Starting the application..."
-npm run start
+# Start the application
+echo "Starting NestJS application..."
+node dist/main.js

@@ -49,13 +49,24 @@ async function bootstrap() {
         console.log('NODE_ENV:', process.env.NODE_ENV);
         console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
         console.log('PORT:', process.env.PORT);
+        // Перевірка Prisma Client
+        try {
+            const { PrismaClient } = require('@prisma/client');
+            const prisma = new PrismaClient();
+            await prisma.$connect();
+            console.log('✅ Database connected successfully');
+            await prisma.$disconnect();
+        }
+        catch (error) {
+            console.error('⚠️ Database connection warning:', error.message);
+        }
         const app = await core_1.NestFactory.create(app_module_1.AppModule);
         app.use((0, cookie_parser_1.default)());
         app.useGlobalPipes(new common_1.ValidationPipe());
         app.enableCors({
             origin: [
                 'http://localhost:3000',
-                'https://wonderful-ocean-0c4b1ba1e.azurestaticapps.net',
+                'https://wonderful-ocean-0c4b1ba1e.1.azurestaticapps.net',
                 'https://mini-crm-frontend.azurewebsites.net'
             ],
             credentials: true,
