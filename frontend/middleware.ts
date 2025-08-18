@@ -12,7 +12,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get('token')?.value;
+  const token = request.cookies.get('authToken')?.value;
   const isAuthenticated = !!token;
 
   console.log('Middleware check:', {
