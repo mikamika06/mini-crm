@@ -1,8 +1,11 @@
-name: Deploy to Azure
+name: Deploy Backend to Azure
 
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/azure-deploy.yml'
 
 jobs:
   deploy:
@@ -15,6 +18,8 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
         
     - name: Install dependencies
       run: |
@@ -26,6 +31,15 @@ jobs:
         cd backend
         npm run build
         
+    - name: Create deployment package
+      run: |
+        cd backend
+        # Include only necessary files for production
+        mkdir deploy-package
+        cp -r dist node_modules package.json package-lock.json deploy-package/
+        cp -r prisma deploy-package/
+        cp -r generated deploy-package/
+        
     - name: Login to Azure
       uses: azure/login@v1
       with:
@@ -35,4 +49,4 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: 'mini-crm'
-        package: ./backend
+        package: ./backend/deploy-package
