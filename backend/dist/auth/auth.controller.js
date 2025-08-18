@@ -28,13 +28,16 @@ let AuthController = class AuthController {
     }
     async login(dto, res) {
         const { access_token } = await this.authService.login(dto);
+        const isProduction = process.env.NODE_ENV === 'production';
         res.cookie("token", access_token, {
             httpOnly: true,
-            secure: false,
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
             path: "/",
             maxAge: 1000 * 60 * 60 * 24,
+            domain: isProduction ? undefined : undefined,
         });
-        return { message: "Logged in" };
+        return { message: "Logged in", access_token };
     }
     logout(res) {
         res.clearCookie("token", {

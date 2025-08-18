@@ -70,6 +70,8 @@ async function bootstrap() {
                 'https://mini-crm-frontend.azurewebsites.net'
             ],
             credentials: true,
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+            allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
         });
         const port = process.env.PORT || 8080;
         await app.listen(port, '0.0.0.0');

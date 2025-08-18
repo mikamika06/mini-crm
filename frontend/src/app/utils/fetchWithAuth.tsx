@@ -6,11 +6,25 @@ export async function fetchWithAuth(input: RequestInfo, init: RequestInit = {}) 
     headers: { "Content-Type": "application/json" },
   };
 
-  // Якщо input - це відносний URL, додаємо базовий URL
   let url = input;
   if (typeof input === 'string' && input.startsWith('/')) {
     url = `${API_BASE_URL}${input}`;
   }
 
-  return fetch(url, { ...defaults, ...init });
+  try {
+    const response = await fetch(url, { ...defaults, ...init });
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`API Request: ${url}`, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+    }
+    
+    return response;
+  } catch (error) {
+    console.error('Fetch error:', error);
+    throw error;
+  }
 }

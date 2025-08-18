@@ -56,13 +56,21 @@ export function middleware(request: NextRequest) {
   
   debugInfo.isProtectedRoute = isProtectedRoute;
 
-  if (isAuthenticated && publicRoutes.includes(pathname)) {
+  if (!isAuthenticated && isProtectedRoute) {
+    debugInfo.action = 'redirect-to-login';
+    const response = NextResponse.redirect(new URL('/login', request.url));
+    response.headers.set('x-middleware-debug', JSON.stringify(debugInfo));
+    return response;
+  }
+
+  if (isAuthenticated && (pathname === '/login' || pathname === '/register')) {
     debugInfo.action = 'authorized-redirect-to-dashboard';
     const response = NextResponse.redirect(new URL('/dashboard', request.url));
     response.headers.set('x-middleware-debug', JSON.stringify(debugInfo));
     return response;
   }
-  if (isAuthenticated && (pathname === '/login' || pathname === '/register')) {
+
+  if (isAuthenticated && pathname === '/') {
     debugInfo.action = 'authorized-redirect-to-dashboard';
     const response = NextResponse.redirect(new URL('/dashboard', request.url));
     response.headers.set('x-middleware-debug', JSON.stringify(debugInfo));

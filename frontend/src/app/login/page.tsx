@@ -28,8 +28,12 @@ export default function LoginPage() {
         return;
       }
 
-      window.location.href = '/dashboard';
-    } catch {
+      const data = await res.json();
+      console.log('Login response:', data); 
+      
+      window.location.replace('/dashboard');
+    } catch (error) {
+      console.error('Login error:', error); 
       setErrorMessage('Network error. Please try again.');
     } finally {
       setIsLoading(false);

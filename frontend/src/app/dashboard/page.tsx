@@ -32,6 +32,12 @@ export default function DashboardPage() {
         fetchWithAuth('/clients'),
       ]);
 
+      if (invoicesRes.status === 401 || clientsRes.status === 401) {
+        console.error('Authentication failed, redirecting to login');
+        window.location.replace('/login');
+        return;
+      }
+
       const invoices: Invoice[] = invoicesRes.ok ? await invoicesRes.json() : [];
       const clients: Client[] = clientsRes.ok ? await clientsRes.json() : [];
 
@@ -52,6 +58,10 @@ export default function DashboardPage() {
       });
     } catch (error) {
       console.error('Fetch error:', error);
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        console.error('Possible authentication issue, redirecting to login');
+        window.location.replace('/login');
+      }
     } finally {
       setLoading(false);
     }
