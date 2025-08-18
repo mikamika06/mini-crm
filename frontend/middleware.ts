@@ -1,18 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-interface DebugInfo {
-  pathname: string;
-  isAuthenticated: boolean;
-  timestamp: string;
-  routeExists?: boolean;
-  isProtectedRoute?: boolean;
-  action?: string;
-}
-
-const protectedRoutes = ['/dashboard', '/clients', '/invoices'];
-const publicRoutes = ['/', '/login', '/register'];
-const allowedRoutes = [...protectedRoutes, ...publicRoutes];
-
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   
@@ -34,62 +21,27 @@ export function middleware(request: NextRequest) {
     cookieValue: token ? 'exists' : 'missing'
   });
 
-  const debugInfo: DebugInfo = {
-    pathname,
-    isAuthenticated,
-    timestamp: new Date().toISOString()
-  };
+  const isPublicRoute = pathname === '/' || 
+                       pathname === '/login' || 
+                       pathname === '/register';
 
-  const routeExists = allowedRoutes.some(route => {
-    if (route === pathname) return true;
-    if (route === '/clients' && pathname.startsWith('/clients/')) return true;
-    if (route === '/invoices' && pathname.startsWith('/invoices/')) return true;
-    return false;
-  });
-
-  debugInfo.routeExists = routeExists;
-
-  if (!routeExists) {
-    debugInfo.action = 'redirect-to-home';
-    const response = NextResponse.redirect(new URL('/', request.url));
-    response.headers.set('x-middleware-debug', JSON.stringify(debugInfo));
-    return response;
-  }
-
-  const isProtectedRoute = protectedRoutes.some(route => 
-    pathname.startsWith(route)
-  );
-  
-  debugInfo.isProtectedRoute = isProtectedRoute;
+  const isProtectedRoute = pathname.startsWith('/dashboard') ||
+                          pathname.startsWith('/clients') ||
+                          pathname.startsWith('/invoices');
 
   if (!isAuthenticated && isProtectedRoute) {
-    debugInfo.action = 'redirect-to-login';
-    const response = NextResponse.redirect(new URL('/login', request.url));
-    response.headers.set('x-middleware-debug', JSON.stringify(debugInfo));
-    return response;
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   if (isAuthenticated && (pathname === '/login' || pathname === '/register')) {
-    debugInfo.action = 'authorized-redirect-to-dashboard';
-    const response = NextResponse.redirect(new URL('/dashboard', request.url));
-    response.headers.set('x-middleware-debug', JSON.stringify(debugInfo));
-    return response;
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   if (isAuthenticated && pathname === '/') {
-    debugInfo.action = 'authorized-redirect-to-dashboard';
-    const response = NextResponse.redirect(new URL('/dashboard', request.url));
-    response.headers.set('x-middleware-debug', JSON.stringify(debugInfo));
-    return response;
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  debugInfo.action = 'proceed';
-  const response = NextResponse.next();
-  response.headers.set('x-pathname', pathname);
-  response.headers.set('x-authenticated', isAuthenticated.toString());
-  response.headers.set('x-middleware-debug', JSON.stringify(debugInfo));
-  
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {

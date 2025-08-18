@@ -32,8 +32,18 @@ export default function LoginPage() {
       console.log('Login response:', data); 
       
       if (data.access_token) {
+        const isProduction = process.env.NODE_ENV === 'production';
+        const cookieOptions = [
+          `token=${data.access_token}`,
+          'path=/',
+          `max-age=86400`,
+          `SameSite=${isProduction ? 'None' : 'Lax'}`,
+          isProduction ? 'Secure' : ''
+        ].filter(Boolean).join('; ');
+        
+        document.cookie = cookieOptions;
+        
         localStorage.setItem('token', data.access_token);
-        document.cookie = `token=${data.access_token}; path=/; max-age=86400; SameSite=Lax`;
         
         window.location.href = '/dashboard';
       } else {
