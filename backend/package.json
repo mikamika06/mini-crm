@@ -2,12 +2,11 @@
   "name": "backend",
   "version": "1.0.0",
   "scripts": {
+    "build": "nest build",
     "start": "node dist/main.js",
-    "start:dev": "nest start --watch",
-    "start:prod": "node dist/main.js",
-    "build": "nest build && npx prisma generate",
-    "prebuild": "npx prisma generate",
-    "postinstall": "npx prisma generate"
+    "start:prod": "sh startup.sh",
+    "postinstall": "prisma generate",
+    "prebuild": "prisma generate"
   },
   "dependencies": {
     "@nestjs/cli": "^11.0.0",
