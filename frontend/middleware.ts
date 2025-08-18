@@ -28,6 +28,12 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
   const isAuthenticated = !!token;
 
+  console.log('Middleware check:', {
+    pathname,
+    hasToken: isAuthenticated,
+    cookieValue: token ? 'exists' : 'missing'
+  });
+
   const debugInfo: DebugInfo = {
     pathname,
     isAuthenticated,

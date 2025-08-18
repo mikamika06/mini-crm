@@ -31,7 +31,14 @@ export default function LoginPage() {
       const data = await res.json();
       console.log('Login response:', data); 
       
-      window.location.replace('/dashboard');
+      if (data.access_token) {
+        localStorage.setItem('token', data.access_token);
+        document.cookie = `token=${data.access_token}; path=/; max-age=86400; SameSite=Lax`;
+        
+        window.location.href = '/dashboard';
+      } else {
+        setErrorMessage('Login successful but no token received');
+      }
     } catch (error) {
       console.error('Login error:', error); 
       setErrorMessage('Network error. Please try again.');

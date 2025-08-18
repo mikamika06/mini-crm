@@ -6,6 +6,16 @@ export async function fetchWithAuth(input: RequestInfo, init: RequestInit = {}) 
     headers: { "Content-Type": "application/json" },
   };
 
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token');
+    if (token) {
+      defaults.headers = {
+        ...defaults.headers,
+        'Authorization': `Bearer ${token}`
+      };
+    }
+  }
+
   let url = input;
   if (typeof input === 'string' && input.startsWith('/')) {
     url = `${API_BASE_URL}${input}`;
