@@ -34,17 +34,17 @@ export default function LoginPage() {
     return null;
   }
 
-  const handleLogin = async (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setErrorMessage('');
 
     try {
       await login(email, password);
-      // Перенаправлення вже відбувається в методі login AuthContext
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login error:', error);
-      setErrorMessage(error.message || 'Network error. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Network error. Please try again.';
+      setErrorMessage(errorMessage);
     } finally {
       setIsLoading(false);
     }
