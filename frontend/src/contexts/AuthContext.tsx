@@ -38,9 +38,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const verifyToken = async () => {
       try {
-        // Перевіряємо токен на сервері
+        const tokenCookie = document.cookie
+          .split(';')
+          .find(c => c.trim().startsWith('token='))
+          ?.split('=')[1];
+
+        if (!tokenCookie) {
+          setIsLoading(false);
+          return;
+        }
+
         const response = await fetch(`${API_URL}/user/me`, {
           credentials: 'include',
+          headers: {
+            'Authorization': `Bearer ${tokenCookie}`
+          }
         });
 
         if (response.ok) {
@@ -53,7 +65,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setIsAuthenticated(false);
         }
       } catch (error) {
-        console.error('Token verification failed:', error);
         setUser(null);
         setIsAuthenticated(false);
       } finally {
@@ -86,6 +97,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     const userResponse = await fetch(`${API_URL}/user/me`, {
       credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${data.access_token}`
+      }
     });
     
     if (userResponse.ok) {

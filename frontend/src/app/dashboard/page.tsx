@@ -33,8 +33,6 @@ export default function DashboardPage() {
       ]);
 
       if (invoicesRes.status === 401 || clientsRes.status === 401) {
-        console.error('Authentication failed, redirecting to login');
-        // window.location.replace('/login');
         return;
       }
 
@@ -57,11 +55,7 @@ export default function DashboardPage() {
         recentInvoices: invoices.slice(0, 5),
       });
     } catch (error) {
-      console.error('Fetch error:', error);
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        console.error('Possible authentication issue, redirecting to login');
-        window.location.replace('/login');
-      }
+      return;
     } finally {
       setLoading(false);
     }

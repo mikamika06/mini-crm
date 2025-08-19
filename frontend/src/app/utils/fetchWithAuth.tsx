@@ -7,7 +7,11 @@ export async function fetchWithAuth(input: RequestInfo, init: RequestInit = {}) 
   };
 
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('token');
+    const token = document.cookie
+      .split(';')
+      .find(c => c.trim().startsWith('token='))
+      ?.split('=')[1];
+    
     if (token) {
       defaults.headers = {
         ...defaults.headers,
