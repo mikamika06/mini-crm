@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as path from 'path';
 import { config } from 'dotenv';
-import cookieParser from 'cookie-parser'; 
+const cookieParser = require('cookie-parser'); 
 
 config({ path: path.resolve(__dirname, '..', '.env') });
 
@@ -14,7 +14,6 @@ async function bootstrap() {
     console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
     console.log('PORT:', process.env.PORT);
 
-    // Перевірка Prisma Client
     try {
       const { PrismaClient } = require('@prisma/client');
       const prisma = new PrismaClient();
