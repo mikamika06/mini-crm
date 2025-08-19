@@ -1,93 +1,65 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
-  checkAuth: () => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  register: (userData: any) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
-  const pathname = usePathname();
 
-  const checkAuth = useCallback(async () => {
-    try {
-      if (typeof window === 'undefined') {
-        setIsLoading(false);
-        return;
-      }
-
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('token='))
-        ?.split('=')[1];
-      
-      if (token) {
-        try {
-          const response = await fetch('https://mini-crm-e6behmfva5efhsch.westeurope-01.azurewebsites.net/auth/profile', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-          
-          if (response.ok) {
-            setIsAuthenticated(true);
-          } else {
-            document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
-            setIsAuthenticated(false);
-          }
-        } catch {
-          setIsAuthenticated(false);
-        }
-      } else {
-        setIsAuthenticated(false);
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      setIsAuthenticated(false);
-    } finally {
-      setIsLoading(false);
-    }
+  useEffect(() => {
+    // Check for existing token
+    const token = document.cookie.includes('token=');
+    setIsAuthenticated(token);
+    setIsLoading(false);
   }, []);
 
-  const logout = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
+  const login = async (email: string, password: string) => {
+    const response = await fetch('http://localhost:8000/api/token/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Login failed');
     }
+
+    const data = await response.json();
+    document.cookie = `token=${data.access}; path=/; max-age=86400`;
+    setIsAuthenticated(true);
+  };
+
+  const logout = () => {
+    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     setIsAuthenticated(false);
-    router.push('/login');
-  }, [router]);
+    window.location.href = '/';
+  };
 
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+  const register = async (userData: any) => {
+    const response = await fetch('http://localhost:8000/api/register/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+    });
 
-  useEffect(() => {
-    if (!isLoading && typeof window !== 'undefined' && pathname) {
-      const protectedRoutes = ['/dashboard', '/clients', '/invoices'];
-      
-      const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-
-      if (!isAuthenticated && isProtectedRoute) {
-        router.push('/login');
-      } else if (isAuthenticated && (pathname === '/login' || pathname === '/register')) {
-        router.push('/dashboard');
-      } else if (isAuthenticated && pathname === '/') {
-        router.push('/dashboard');
-      }
+    if (!response.ok) {
+      throw new Error('Registration failed');
     }
-  }, [isAuthenticated, isLoading, pathname, router]);
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, checkAuth, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isLoading, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );

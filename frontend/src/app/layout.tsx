@@ -1,10 +1,9 @@
 import "@/styles/globals.css";
 import { ReactNode } from "react";
 import type { Metadata } from "next";
-import ClientLayout from "@/components/ClientLayout";
 import { MiddlewareDebug } from "@/components/MiddlewareDebug";
-
 import { AuthProvider } from "@/contexts/AuthContext";
+import LayoutWrapper from "@/components/LayoutWrapper";
 
 export const metadata: Metadata = {
   title: "Mini CRM",
@@ -17,9 +16,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-screen bg-gray-50 text-gray-800 antialiased">
         <AuthProvider>
           <MiddlewareDebug />
-          <ClientLayout>
+          <LayoutWrapper>
             {children}
-          </ClientLayout>
+          </LayoutWrapper>
         </AuthProvider>
       </body>
     </html>
