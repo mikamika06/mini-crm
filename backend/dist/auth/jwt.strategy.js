@@ -22,20 +22,14 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         }
         super({
             jwtFromRequest: (req) => {
-                var _a, _b, _c;
-                const authHeader = (_a = req === null || req === void 0 ? void 0 : req.headers) === null || _a === void 0 ? void 0 : _a.authorization;
-                if (authHeader && authHeader.startsWith('Bearer ')) {
-                    return authHeader.substring(7);
-                }
-                const cookieHeader = (_b = req === null || req === void 0 ? void 0 : req.headers) === null || _b === void 0 ? void 0 : _b.cookie;
-                if (cookieHeader) {
-                    const token = (_c = cookieHeader
-                        .split(';')
-                        .find(c => c.trim().startsWith('token='))) === null || _c === void 0 ? void 0 : _c.split('=')[1];
-                    if (token)
-                        return token;
-                }
-                return null;
+                var _a, _b;
+                const cookie = (_a = req === null || req === void 0 ? void 0 : req.headers) === null || _a === void 0 ? void 0 : _a.cookie;
+                if (!cookie)
+                    return null;
+                const token = (_b = cookie
+                    .split(';')
+                    .find(c => c.trim().startsWith('token='))) === null || _b === void 0 ? void 0 : _b.split('=')[1];
+                return token || null;
             },
             ignoreExpiration: false,
             secretOrKey: secret,

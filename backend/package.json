@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "scripts": {
     "build": "nest build",
-    "start": "node dist/main.js",
-    "start:prod": "sh startup.sh",
+    "start": "nest start",
+    "start:prod": "node dist/main",
     "postinstall": "prisma generate",
-    "prebuild": "prisma generate"
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy"
   },
   "dependencies": {
     "@nestjs/cli": "^11.0.0",
