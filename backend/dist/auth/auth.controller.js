@@ -30,7 +30,7 @@ let AuthController = class AuthController {
         const { access_token } = await this.authService.login(dto);
         const isProduction = process.env.NODE_ENV === 'production';
         res.cookie("token", access_token, {
-            httpOnly: true,
+            httpOnly: false,
             secure: isProduction,
             sameSite: isProduction ? 'none' : 'lax',
             path: "/",
