@@ -14,21 +14,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     
     super({
       jwtFromRequest: (req: Request) => {
-        const authHeader = req?.headers?.authorization;
-        if (authHeader && authHeader.startsWith('Bearer ')) {
-          return authHeader.substring(7);
-        }
-        
-        const cookieHeader = req?.headers?.cookie;
-        if (cookieHeader) {
-          const token = cookieHeader
-            .split(';')
-            .find(c => c.trim().startsWith('token='))
-            ?.split('=')[1];
-          if (token) return token;
-        }
+        const cookie = req?.headers?.cookie;
+        if (!cookie) return null;
 
-        return null;
+        const token = cookie
+          .split(';')
+          .find(c => c.trim().startsWith('token='))
+          ?.split('=')[1];
+
+        return token || null;
       },
       ignoreExpiration: false,
       secretOrKey: secret,
