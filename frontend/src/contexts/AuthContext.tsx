@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const verifyToken = async () => {
+    const checkAuth = async () => {
       try {
         const tokenCookie = document.cookie
           .split(';')
@@ -44,13 +44,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           ?.split('=')[1];
 
         if (!tokenCookie) {
+          setUser(null);
+          setIsAuthenticated(false);
           setIsLoading(false);
           return;
         }
 
         const response = await fetch(`${API_URL}/user/me`, {
+          method: 'GET',
           credentials: 'include',
           headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${tokenCookie}`
           }
         });
@@ -64,7 +68,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(null);
           setIsAuthenticated(false);
         }
-      } catch {
+      } catch (error) {
+        console.error('Auth check failed:', error);
         setUser(null);
         setIsAuthenticated(false);
       } finally {
@@ -72,43 +77,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    const token = document.cookie.includes('token=');
-    if (token) {
-      verifyToken();
-    } else {
-      setIsLoading(false);
-    }
+    checkAuth();
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-      credentials: 'include',
-    });
+    try {
+      setIsLoading(true);
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include',
+      });
 
-    if (!response.ok) {
-      throw new Error('Login failed');
-    }
-
-    const data = await response.json();
-    document.cookie = `token=${data.access_token}; path=/; max-age=86400; SameSite=Lax`;
-    
-    const userResponse = await fetch(`${API_URL}/user/me`, {
-      credentials: 'include',
-      headers: {
-        'Authorization': `Bearer ${data.access_token}`
+      if (!response.ok) {
+        throw new Error('Login failed');
       }
-    });
-    
-    if (userResponse.ok) {
-      const userData = await userResponse.json();
-      setUser(userData);
-      setIsAuthenticated(true);
-      router.push('/dashboard');
-    } else {
-      throw new Error('Failed to get user data');
+
+      const data = await response.json();
+      document.cookie = `token=${data.access_token}; path=/; max-age=86400; SameSite=Lax`;
+      
+      const userResponse = await fetch(`${API_URL}/user/me`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${data.access_token}`
+        }
+      });
+      
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        setUser(userData);
+        setIsAuthenticated(true);
+        setIsLoading(false);
+        router.push('/dashboard');
+      } else {
+        throw new Error('Failed to get user data');
+      }
+    } catch (error) {
+      setIsLoading(false);
+      throw error;
     }
   };
 

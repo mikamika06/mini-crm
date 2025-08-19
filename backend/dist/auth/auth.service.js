@@ -53,14 +53,27 @@ let AuthService = class AuthService {
         this.jwt = jwt;
     }
     async register(dto) {
-        const hashed = await bcrypt.hash(dto.password, 10);
-        await this.prisma.user.create({
-            data: {
-                email: dto.email,
-                password: hashed,
-                name: dto.name,
-            },
-        });
+        try {
+            const existingUser = await this.prisma.user.findUnique({
+                where: { email: dto.email },
+            });
+            if (existingUser) {
+                throw new common_1.UnauthorizedException('User with this email already exists');
+            }
+            const hashed = await bcrypt.hash(dto.password, 10);
+            const user = await this.prisma.user.create({
+                data: {
+                    email: dto.email,
+                    password: hashed,
+                    name: dto.name,
+                },
+            });
+            return { message: 'User created successfully', userId: user.id };
+        }
+        catch (error) {
+            console.error('Registration error:', error);
+            throw error;
+        }
     }
     async login(dto) {
         try {

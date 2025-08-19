@@ -3,7 +3,10 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 export async function fetchWithAuth(input: RequestInfo, init: RequestInit = {}) {
   const defaults: RequestInit = {
     credentials: "include",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "X-Requested-With": "XMLHttpRequest"
+    },
   };
 
   if (typeof window !== 'undefined') {
@@ -26,13 +29,19 @@ export async function fetchWithAuth(input: RequestInfo, init: RequestInit = {}) 
   }
 
   try {
-    const response = await fetch(url, { ...defaults, ...init });
+    const response = await fetch(url, { 
+      ...defaults, 
+      ...init,
+      headers: {
+        ...defaults.headers,
+        ...init.headers
+      }
+    });
     
     if (process.env.NODE_ENV === 'development') {
       console.log(`API Request: ${url}`, {
         status: response.status,
         statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries())
       });
     }
     
