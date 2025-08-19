@@ -2,12 +2,19 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+interface UserData {
+  email: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+}
+
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  register: (userData: any) => Promise<void>;
+  register: (userData: UserData) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -46,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.location.href = '/';
   };
 
-  const register = async (userData: any) => {
+  const register = async (userData: UserData) => {
     const response = await fetch('http://localhost:8000/api/register/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
