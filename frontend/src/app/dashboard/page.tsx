@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import InvoiceTable from '@/components/InvoiceTable';
 import { fetchWithAuth } from '@/app/utils/fetchWithAuth';
 import { Invoice, Client } from '@/app/types';
 import { FileText, Users, TrendingUp, AlertCircle } from 'lucide-react';
-import ProtectedRoute from '@/components/ProtectedRoute';
 
 interface DashboardStats {
   totalInvoices: number;
@@ -107,9 +106,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <ProtectedRoute>
-      <div className="p-6 space-y-6">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+    <div className="p-6 space-y-6">
+      <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-md border">
@@ -266,9 +264,8 @@ export default function DashboardPage() {
               onMarkPaid={handleMarkPaid}
               onDelete={handleDeleteInvoice}
             />
-          </div>
         </div>
       </div>
-    </ProtectedRoute>
+    </div>
   );
 }

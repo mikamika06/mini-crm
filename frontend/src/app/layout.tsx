@@ -1,26 +1,22 @@
+import "@/styles/globals.css";
+import { ReactNode } from "react";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "../styles/globals.css";
-import { AuthProvider } from '@/contexts/AuthContext';
-
-const inter = Inter({ subsets: ["latin"] });
+import ClientLayout from "@/components/ClientLayout";
+import { MiddlewareDebug } from "@/components/MiddlewareDebug";
 
 export const metadata: Metadata = {
   title: "Mini CRM",
-  description: "Customer Relationship Management System",
+  description: "Simple CRM for freelancers",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>
-        <AuthProvider>
+      <body className="min-h-screen bg-gray-50 text-gray-800 antialiased">
+        <MiddlewareDebug />
+        <ClientLayout>
           {children}
-        </AuthProvider>
+        </ClientLayout>
       </body>
     </html>
   );

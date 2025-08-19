@@ -5,7 +5,6 @@ import InvoiceTable from '@/components/InvoiceTable';
 import InvoiceForm from '@/components/InvoiceForm';
 import { fetchWithAuth } from '@/app/utils/fetchWithAuth';
 import { Invoice } from '@/app/types';
-import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -85,37 +84,35 @@ export default function InvoicesPage() {
   }
 
   return (
-    <ProtectedRoute>
-      <div className="p-6 space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Invoices</h1>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-          >
-            {showForm ? 'Cancel' : 'Create Invoice'}
-          </button>
-        </div>
+    <div className="p-6 space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-gray-900">Invoices</h1>
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+        >
+          {showForm ? 'Cancel' : 'Create Invoice'}
+        </button>
+      </div>
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
-            <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
-            {error}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
+          <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
+          {error}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {showForm && (
+          <div className="lg:col-span-1">
+            <InvoiceForm onInvoiceCreated={handleInvoiceCreated} />
           </div>
         )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {showForm && (
-            <div className="lg:col-span-1">
-              <InvoiceForm onInvoiceCreated={handleInvoiceCreated} />
-            </div>
-          )}
-          
-          <div className={showForm ? "lg:col-span-1" : "lg:col-span-2"}>
-            <InvoiceTable invoices={invoices} onMarkPaid={handleMarkPaid} onDelete={handleDeleteInvoice} />
-          </div>
+        
+        <div className={showForm ? "lg:col-span-1" : "lg:col-span-2"}>
+          <InvoiceTable invoices={invoices} onMarkPaid={handleMarkPaid} onDelete={handleDeleteInvoice} />
         </div>
       </div>
-    </ProtectedRoute>
+    </div>
   );
 }
