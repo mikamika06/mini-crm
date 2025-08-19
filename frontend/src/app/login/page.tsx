@@ -1,14 +1,38 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { fetchWithAuth } from '@/app/utils/fetchWithAuth';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { login, isAuthenticated, isLoading: authLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, authLoading, router]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return null;
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,35 +40,11 @@ export default function LoginPage() {
     setErrorMessage('');
 
     try {
-      const res = await fetchWithAuth('/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        setErrorMessage(errorData.message || 'Invalid login credentials');
-        return;
-      }
-
-      const data = await res.json();
-      console.log('Login response:', data); 
-      
-      if (data.access_token) {
-        document.cookie = `token=${data.access_token}; path=/; max-age=86400; SameSite=Lax`;
-        
-        localStorage.setItem('token', data.access_token);
-        
-        setTimeout(() => {
-          window.location.href = '/dashboard';
-        }, 100);
-      } else {
-        setErrorMessage('Login successful but no token received');
-      }
-    } catch (error) {
-      console.error('Login error:', error); 
-      setErrorMessage('Network error. Please try again.');
+      await login(email, password);
+      // Перенаправлення вже відбувається в методі login AuthContext
+    } catch (error: any) {
+      console.error('Login error:', error);
+      setErrorMessage(error.message || 'Network error. Please try again.');
     } finally {
       setIsLoading(false);
     }

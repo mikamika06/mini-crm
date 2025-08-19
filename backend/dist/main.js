@@ -46,7 +46,6 @@ async function bootstrap() {
         console.log('NODE_ENV:', process.env.NODE_ENV);
         console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
         console.log('PORT:', process.env.PORT);
-        // Перевірка Prisma Client
         try {
             const { PrismaClient } = require('@prisma/client');
             const prisma = new PrismaClient();
@@ -62,7 +61,7 @@ async function bootstrap() {
         app.useGlobalPipes(new common_1.ValidationPipe());
         app.enableCors({
             origin: [
-                'http://localhost:3000',
+                process.env.FRONTEND_URL || 'http://localhost:3000',
                 'https://wonderful-ocean-0c4b1ba1e.1.azurestaticapps.net',
                 'https://mini-crm-frontend.azurewebsites.net'
             ],

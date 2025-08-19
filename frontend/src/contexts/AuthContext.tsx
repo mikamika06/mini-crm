@@ -1,6 +1,9 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 interface UserData {
   email: string;
@@ -22,16 +25,16 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
-    // Check for existing token
     const token = document.cookie.includes('token=');
     setIsAuthenticated(token);
     setIsLoading(false);
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await fetch('http://localhost:8000/api/token/', {
+    const response = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -43,18 +46,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const data = await response.json();
-    document.cookie = `token=${data.access}; path=/; max-age=86400`;
+    document.cookie = `token=${data.access_token}; path=/; max-age=86400; SameSite=Lax`;
     setIsAuthenticated(true);
+    
+    router.push('/dashboard');
   };
 
   const logout = () => {
     document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     setIsAuthenticated(false);
-    window.location.href = '/';
+    router.push('/');
   };
 
   const register = async (userData: UserData) => {
-    const response = await fetch('http://localhost:8000/api/register/', {
+    const response = await fetch(`${API_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),

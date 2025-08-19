@@ -8,6 +8,10 @@ export function middleware(request: NextRequest) {
   const publicRoutes = ['/', '/login', '/register'];
   const isPublicRoute = publicRoutes.includes(pathname);
 
+  if (token && (pathname === '/login' || pathname === '/register')) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
   if (isPublicRoute) {
     return NextResponse.next();
   }

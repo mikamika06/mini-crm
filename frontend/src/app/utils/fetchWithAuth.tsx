@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://mini-crm-e6behmfva5efhsch.westeurope-01.azurewebsites.net';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 export async function fetchWithAuth(input: RequestInfo, init: RequestInit = {}) {
   const defaults: RequestInit = {

@@ -31,7 +31,7 @@ async function bootstrap() {
 
     app.enableCors({
       origin: [
-        'http://localhost:3000',
+        process.env.FRONTEND_URL || 'http://localhost:3000',
         'https://wonderful-ocean-0c4b1ba1e.1.azurestaticapps.net',
         'https://mini-crm-frontend.azurewebsites.net'
       ],
