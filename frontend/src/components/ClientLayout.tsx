@@ -8,21 +8,21 @@ import Sidebar from '@/components/Sidebar';
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasRedirected, setHasRedirected] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  
-  const publicPages = ['/', '/login', '/register'];
-  const isPublicPage = pathname ? publicPages.includes(pathname) : false;
 
   useEffect(() => {
     const checkAuth = async () => {
-      setIsLoading(true);
       try {
         const token = typeof window !== 'undefined' 
           ? localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1]
           : null;
 
+        console.log('Auth check starting:', { pathname, hasToken: !!token });
+
         if (!token) {
+          console.log('No token found, setting unauthenticated');
           setIsAuthenticated(false);
           setIsLoading(false);
           return;
@@ -30,16 +30,13 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
         const response = await fetchWithAuth('/user/me');
         const authenticated = response.ok;
-        setIsAuthenticated(authenticated);
         
-        console.log('ClientLayout auth check:', { 
-          pathname, 
+        console.log('Auth API response:', { 
           authenticated, 
-          isPublicPage,
-          responseStatus: response.status,
-          hasToken: !!token
+          status: response.status 
         });
-
+        
+        setIsAuthenticated(authenticated);
       } catch (error) {
         console.error('Auth check failed:', error);
         setIsAuthenticated(false);
@@ -49,17 +46,36 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     };
 
     checkAuth();
-  }, [pathname]);
+  }, []); 
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated !== null) {
-      if (!isAuthenticated && !isPublicPage) {
-        router.push('/login');
-      } else if (isAuthenticated && (pathname === '/login' || pathname === '/register')) {
-        router.push('/dashboard');
-      }
+    if (isLoading || hasRedirected) return;
+
+    const publicPaths = ['/', '/login', '/register'];
+    const isPublic = publicPaths.includes(pathname || '');
+
+    console.log('Navigation check:', { 
+      pathname, 
+      isPublic, 
+      isAuthenticated, 
+      isLoading, 
+      hasRedirected 
+    });
+
+    if (!isAuthenticated && !isPublic) {
+      console.log('Redirecting to login...');
+      setHasRedirected(true);
+      router.push('/login');
+    } else if (isAuthenticated && (pathname === '/login' || pathname === '/register')) {
+      console.log('Redirecting to dashboard...');
+      setHasRedirected(true);
+      router.push('/dashboard');
     }
-  }, [isAuthenticated, isLoading, isPublicPage, pathname, router]); 
+  }, [isAuthenticated, isLoading, pathname, router, hasRedirected]);
+
+  useEffect(() => {
+    setHasRedirected(false);
+  }, [pathname]);
 
   if (isLoading) {
     return (
@@ -72,7 +88,10 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     );
   }
 
-  if (isPublicPage) {
+  const publicPaths = ['/', '/login', '/register'];
+  const isPublic = publicPaths.includes(pathname || '');
+
+  if (isPublic) {
     return <div className="min-h-screen bg-gray-50">{children}</div>;
   }
 
@@ -89,16 +108,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     );
   }
 
-  if (!isAuthenticated && !isPublicPage) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Redirecting to login...</p>
-        </div>
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Redirecting...</p>
       </div>
-    );
-  }
-
-  return <div className="min-h-screen bg-gray-50">{children}</div>;
+    </div>
+  );
 }
