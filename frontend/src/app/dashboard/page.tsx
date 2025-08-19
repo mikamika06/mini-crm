@@ -54,7 +54,7 @@ export default function DashboardPage() {
         unpaidTotal,
         recentInvoices: invoices.slice(0, 5),
       });
-    } catch (error) {
+    } catch {
       return;
     } finally {
       setLoading(false);
@@ -73,8 +73,7 @@ export default function DashboardPage() {
       if (response.ok) {
         fetchDashboardData();
       }
-    } catch (error) {
-      console.error('Error marking paid:', error);
+    } catch {
     }
   };
 
@@ -86,8 +85,7 @@ export default function DashboardPage() {
       if (response.ok) {
         fetchDashboardData();
       }
-    } catch (error) {
-      console.error('Error deleting invoice:', error);
+    } catch {
     }
   };
 
