@@ -18,8 +18,17 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const checkAuth = async () => {
       setIsLoading(true);
       try {
+        const token = typeof window !== 'undefined' 
+          ? localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1]
+          : null;
+
+        if (!token) {
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          return;
+        }
+
         const response = await fetchWithAuth('/user/me');
-        
         const authenticated = response.ok;
         setIsAuthenticated(authenticated);
         
@@ -27,7 +36,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           pathname, 
           authenticated, 
           isPublicPage,
-          responseStatus: response.status 
+          responseStatus: response.status,
+          hasToken: !!token
         });
 
       } catch (error) {
@@ -39,7 +49,17 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     };
 
     checkAuth();
-  }, [pathname, isPublicPage]);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated !== null) {
+      if (!isAuthenticated && !isPublicPage) {
+        router.push('/login');
+      } else if (isAuthenticated && (pathname === '/login' || pathname === '/register')) {
+        router.push('/dashboard');
+      }
+    }
+  }, [isAuthenticated, isLoading, isPublicPage, pathname, router]); 
 
   if (isLoading) {
     return (
@@ -70,7 +90,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   }
 
   if (!isAuthenticated && !isPublicPage) {
-    router.push('/login');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
