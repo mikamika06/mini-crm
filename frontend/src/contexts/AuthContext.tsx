@@ -12,7 +12,14 @@ interface UserData {
   lastName?: string;
 }
 
+interface User {
+  id: number;
+  email: string;
+  name?: string;
+}
+
 interface AuthContextType {
+  user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -25,12 +32,41 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
+    const verifyToken = async () => {
+      try {
+        // Перевіряємо токен на сервері
+        const response = await fetch(`${API_URL}/user/me`, {
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+          setIsAuthenticated(true);
+        } else {
+          document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+          setUser(null);
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error('Token verification failed:', error);
+        setUser(null);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     const token = document.cookie.includes('token=');
-    setIsAuthenticated(token);
-    setIsLoading(false);
+    if (token) {
+      verifyToken();
+    } else {
+      setIsLoading(false);
+    }
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -47,13 +83,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const data = await response.json();
     document.cookie = `token=${data.access_token}; path=/; max-age=86400; SameSite=Lax`;
-    setIsAuthenticated(true);
     
-    router.push('/dashboard');
+    const userResponse = await fetch(`${API_URL}/user/me`, {
+      credentials: 'include',
+    });
+    
+    if (userResponse.ok) {
+      const userData = await userResponse.json();
+      setUser(userData);
+      setIsAuthenticated(true);
+      router.push('/dashboard');
+    } else {
+      throw new Error('Failed to get user data');
+    }
   };
 
   const logout = () => {
     document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    setUser(null);
     setIsAuthenticated(false);
     router.push('/');
   };
@@ -71,7 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, login, logout, register }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );
