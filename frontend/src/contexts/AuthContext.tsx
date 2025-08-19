@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setIsAuthenticated(false);
           }
         } catch {
-          setIsAuthenticated(true);
+          setIsAuthenticated(false);
         }
       } else {
         setIsAuthenticated(false);
