@@ -34,7 +34,7 @@ export default function DashboardPage() {
 
       if (invoicesRes.status === 401 || clientsRes.status === 401) {
         console.error('Authentication failed, redirecting to login');
-        window.location.replace('/login');
+        // window.location.replace('/login');
         return;
       }
 
