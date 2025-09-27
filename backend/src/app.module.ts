@@ -11,6 +11,7 @@ import { OpenAIModule } from './openai/openai.module';
 import { PineconeModule } from './pinecone/pinecone.module';
 import { LangGraphModule } from './langgraph/langgraph.module';
 import { AIModule } from './ai/ai.module';
+import { ResearchAgentModule } from './agents/research-agent.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { AIModule } from './ai/ai.module';
     PineconeModule,
     LangGraphModule,
     AIModule,
+    ResearchAgentModule,
   ],
   controllers: [UserController],
 })

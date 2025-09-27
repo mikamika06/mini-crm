@@ -18,10 +18,10 @@ async function bootstrap() {
       const { PrismaClient } = require('@prisma/client');
       const prisma = new PrismaClient();
       await prisma.$connect();
-      console.log('✅ Database connected successfully');
+      console.log('Database connected successfully');
       await prisma.$disconnect();
     } catch (error: any) {
-      console.error('⚠️ Database connection warning:', error.message);
+      console.error('Database connection warning:', error.message);
     }
     
     const app = await NestFactory.create(AppModule);
