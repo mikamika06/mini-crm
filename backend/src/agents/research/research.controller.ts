@@ -1,5 +1,5 @@
 import { Controller, Post, Body, UseGuards } from '@nestjs/common';
-import { JwtGuard } from '../auth/jwt.guard';
+import { JwtGuard } from '../../auth/jwt.guard';
 import { ResearchAgentService } from './research-agent.service';
 
 interface ResearchRequest {

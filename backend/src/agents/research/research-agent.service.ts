@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { OpenAIService } from '../openai/openai.service';
-import { PineconeService } from '../pinecone/pinecone.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { OpenAIService } from '../../ai-infrastructure/openai/openai.service';
+import { PineconeService } from '../../ai-infrastructure/pinecone/pinecone.service';
+import { PrismaService } from '../../database/prisma/prisma.service';
 
 interface SearchContext {
   query: string;
