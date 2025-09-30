@@ -2,19 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { OpenAIService } from '../../ai-infrastructure/openai/openai.service';
 import { PineconeService } from '../../ai-infrastructure/pinecone/pinecone.service';
 import { PrismaService } from '../../database/prisma/prisma.service';
-
-interface SearchContext {
-  query: string;
-  type?: 'client' | 'invoice' | 'general';
-  limit?: number;
-}
-
-interface ResearchResult {
-  databaseResults: any[];
-  vectorResults: any[];
-  summary: string;
-  confidence: number;
-}
+import {
+  SearchContext,
+  ResearchResult,
+  DatabaseSearchResult,
+  VectorSearchResult,
+  ResultSource
+} from './interfaces/research.interfaces';
 
 @Injectable()
 export class ResearchAgentService {
@@ -26,6 +20,8 @@ export class ResearchAgentService {
 
   
   async research(context: SearchContext): Promise<ResearchResult> {
+    const startTime = Date.now();
+    
     try {
       const { query, type = 'general', limit = 10 } = context;
 
@@ -35,20 +31,30 @@ export class ResearchAgentService {
       ]);
 
       const summary = await this.generateSummary(query, databaseResults, vectorResults);
+      const processingTime = Date.now() - startTime;
+      const totalResults = databaseResults.length + vectorResults.length;
 
       return {
-        databaseResults,
-        vectorResults,
+        databaseResults: this.formatDatabaseResults(databaseResults, query),
+        vectorResults: this.formatVectorResults(vectorResults),
         summary,
         confidence: this.calculateConfidence(databaseResults, vectorResults),
+        totalResults,
+        processingTime,
+        sources: this.generateSources(databaseResults, vectorResults, processingTime)
       };
     } catch (error) {
       console.error('Research error:', error);
+      const processingTime = Date.now() - startTime;
+      
       return {
         databaseResults: [],
         vectorResults: [],
         summary: 'Unable to retrieve research results',
         confidence: 0,
+        totalResults: 0,
+        processingTime,
+        sources: []
       };
     }
   }
@@ -140,55 +146,6 @@ export class ResearchAgentService {
     }
   }
 
-  
-  private async generateSummary(
-    query: string,
-    databaseResults: any[],
-    vectorResults: any[],
-  ): Promise<string> {
-    try {
-      const context = {
-        query,
-        databaseCount: databaseResults.length,
-        vectorCount: vectorResults.length,
-        sampleData: {
-          database: databaseResults.slice(0, 3),
-          vector: vectorResults.slice(0, 3),
-        },
-      };
-
-      const prompt = `
-        Based on the search results for query: "${query}"
-        
-        Database results found: ${context.databaseCount}
-        Vector results found: ${context.vectorCount}
-        
-        Sample database results: ${JSON.stringify(context.sampleData.database, null, 2)}
-        Sample vector results: ${JSON.stringify(context.sampleData.vector, null, 2)}
-        
-        Please provide a concise summary of the findings and their relevance to the query.
-        Focus on the most important information that would be helpful for the user.
-      `;
-
-      const response = await this.openaiService.createChatCompletion([
-        { role: 'user', content: prompt },
-      ]);
-
-      return response.choices[0]?.message?.content || 'No summary available';
-    } catch (error) {
-      console.error('Summary generation error:', error);
-      return `Found ${databaseResults.length} database results and ${vectorResults.length} vector results for query: "${query}"`;
-    }
-  }
-
-
-  private calculateConfidence(databaseResults: any[], vectorResults: any[]): number {
-    const dbScore = Math.min(databaseResults.length * 0.3, 0.6);
-    const vectorScore = Math.min(vectorResults.length * 0.2, 0.4);
-    return Math.min(dbScore + vectorScore, 1.0);
-  }
-
-  
   async indexData(data: { id: string; text: string; metadata?: any }[]): Promise<void> {
     try {
       const vectors = [];
@@ -218,5 +175,125 @@ export class ResearchAgentService {
       console.error('Indexing error:', error);
       throw error;
     }
+  }
+
+  // Helper methods for formatting results
+  private formatDatabaseResults(results: any[], query: string): DatabaseSearchResult[] {
+    return results.map((item, index) => ({
+      id: item.id,
+      type: this.determineResultType(item),
+      data: item,
+      relevanceScore: this.calculateRelevanceScore(item, query),
+      matchedFields: this.findMatchedFields(item, query)
+    }));
+  }
+
+  private formatVectorResults(results: any[]): VectorSearchResult[] {
+    return results.map(result => ({
+      id: result.id,
+      content: result.metadata?.text || '',
+      metadata: result.metadata || {},
+      score: result.score || 0,
+      embedding: result.values
+    }));
+  }
+
+  private generateSources(databaseResults: any[], vectorResults: any[], processingTime: number): ResultSource[] {
+    const sources: ResultSource[] = [];
+    
+    if (databaseResults.length > 0) {
+      sources.push({
+        type: 'database',
+        confidence: databaseResults.length > 0 ? 0.8 : 0,
+        resultCount: databaseResults.length,
+        queryTime: processingTime * 0.6 // Estimate 60% of time for DB
+      });
+    }
+
+    if (vectorResults.length > 0) {
+      sources.push({
+        type: 'vector',
+        confidence: vectorResults.length > 0 ? 0.7 : 0,
+        resultCount: vectorResults.length,
+        queryTime: processingTime * 0.4 // Estimate 40% of time for vectors
+      });
+    }
+
+    return sources;
+  }
+
+  private determineResultType(item: any): 'client' | 'invoice' | 'user' {
+    if (item.email && item.company !== undefined) return 'client';
+    if (item.amount && item.dueDate) return 'invoice';
+    return 'user';
+  }
+
+  private calculateRelevanceScore(item: any, query: string): number {
+    const queryLower = query.toLowerCase();
+    let score = 0;
+
+    // Basic text matching
+    const itemText = JSON.stringify(item).toLowerCase();
+    const matches = (itemText.match(new RegExp(queryLower, 'g')) || []).length;
+    score += matches * 0.2;
+
+    // Field-specific scoring
+    if (item.name && item.name.toLowerCase().includes(queryLower)) score += 0.3;
+    if (item.email && item.email.toLowerCase().includes(queryLower)) score += 0.3;
+    if (item.company && item.company.toLowerCase().includes(queryLower)) score += 0.2;
+
+    return Math.min(score, 1.0);
+  }
+
+  private findMatchedFields(item: any, query: string): string[] {
+    const queryLower = query.toLowerCase();
+    const matchedFields: string[] = [];
+
+    Object.keys(item).forEach(key => {
+      const value = item[key];
+      if (typeof value === 'string' && value.toLowerCase().includes(queryLower)) {
+        matchedFields.push(key);
+      }
+    });
+
+    return matchedFields;
+  }
+
+  private calculateConfidence(databaseResults: any[], vectorResults: any[]): number {
+    const dbScore = databaseResults.length > 0 ? 0.6 : 0;
+    const vectorScore = vectorResults.length > 0 ? 0.4 : 0;
+    
+    // Boost confidence based on result quality
+    const qualityBoost = Math.min(
+      (databaseResults.length + vectorResults.length) * 0.1, 
+      0.3
+    );
+    
+    return Math.min(dbScore + vectorScore + qualityBoost, 1.0);
+  }
+
+  private async generateSummary(query: string, databaseResults: any[], vectorResults: any[]): Promise<string> {
+    if (databaseResults.length === 0 && vectorResults.length === 0) {
+      return `No relevant results found for query: "${query}"`;
+    }
+
+    const totalResults = databaseResults.length + vectorResults.length;
+    const dbTypes = [...new Set(databaseResults.map(r => this.determineResultType(r)))];
+    
+    let summary = `Found ${totalResults} relevant results for "${query}".`;
+    
+    if (databaseResults.length > 0) {
+      summary += ` Database search returned ${databaseResults.length} records`;
+      if (dbTypes.length > 0) {
+        summary += ` (${dbTypes.join(', ')})`;
+      }
+      summary += '.';
+    }
+    
+    if (vectorResults.length > 0) {
+      summary += ` Vector search found ${vectorResults.length} semantic matches.`;
+    }
+
+    return summary;
   }
 }

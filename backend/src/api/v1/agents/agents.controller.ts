@@ -56,15 +56,11 @@ export class AgentsController {
   @Post('communication/draft')
   async generateDraft(@Body() request: DraftRequestDto) {
     try {
-      const draft = await this.communicationAgent.generateDraft(
-        request.type,
-        request.content,
-        request.tone || 'professional'
-      );
+      const draft = await this.communicationAgent.generateDraft(request);
 
       return {
         success: true,
-        data: { draft },
+        data: draft,
       };
     } catch (error) {
       return {

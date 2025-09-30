@@ -45,7 +45,6 @@ export class ReactWorkflowService {
     let currentStep = 0;
 
     while (!state.isComplete && currentStep < maxSteps) {
-      // Determine next action based on current state
       const nextAction = this.determineNextAction(state);
       
       switch (nextAction) {
@@ -73,24 +72,20 @@ export class ReactWorkflowService {
   }
 
   private determineNextAction(state: WorkflowState): string {
-    // If no thought yet, start with thinking
     if (!state.thought) {
       return 'THINK';
     }
 
-    // If thought indicates need for search and no context yet
     if (state.thought.includes('search') || state.thought.includes('context')) {
       if (!state.context) {
         return 'SEARCH';
       }
     }
 
-    // If we have thought and potentially context, generate response
     if (state.thought && !state.response) {
       return 'GENERATE';
     }
 
-    // If we have a response, we're complete
     if (state.response) {
       return 'COMPLETE';
     }
@@ -140,7 +135,6 @@ export class ReactWorkflowService {
 
   private async searchStep(state: WorkflowState): Promise<void> {
     try {
-      // Use research agent to gather context
       const searchResult = await this.researchAgent.research({
         query: state.query,
         limit: 5,
@@ -173,7 +167,6 @@ export class ReactWorkflowService {
 
   private async generateStep(state: WorkflowState, config: WorkflowConfig): Promise<void> {
     try {
-      // Build context for generation
       let contextText = '';
       if (state.context) {
         contextText = `
@@ -219,14 +212,12 @@ export class ReactWorkflowService {
     }
   }
 
-  // Helper method to get a readable trace of the workflow
   getWorkflowTrace(state: WorkflowState): string {
     return state.steps
       .map((step, index) => `${index + 1}. [${step.type.toUpperCase()}] ${step.content}`)
       .join('\n');
   }
 
-  // Method to create a simple ReAct loop for testing
   async simpleReAct(query: string): Promise<{
     response: string;
     trace: string;
@@ -235,7 +226,7 @@ export class ReactWorkflowService {
     const result = await this.executeReActWorkflow(query, {
       maxSteps: 5,
       tone: 'professional',
-      language: 'ukrainian'
+      language: 'english'
     });
 
     return {
