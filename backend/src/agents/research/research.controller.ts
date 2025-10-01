@@ -61,6 +61,11 @@ export class ResearchController {
     }
   }
 
+  @Post('test-pinecone')
+  async testPinecone() {
+    return await this.researchAgentService.testPinecone();
+  }
+
   @Post('demo')
   async demo() {
     try {

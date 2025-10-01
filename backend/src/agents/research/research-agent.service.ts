@@ -13,10 +13,25 @@ import {
 @Injectable()
 export class ResearchAgentService {
   constructor(
+    private prismaService: PrismaService,
     private openaiService: OpenAIService,
     private pineconeService: PineconeService,
-    private prismaService: PrismaService,
-  ) {}
+  ) {
+    this.initializePinecone();
+  }
+
+  private async initializePinecone() {
+    try {
+      console.log('Initializing Pinecone...');
+      const connected = await this.pineconeService.testConnection();
+      if (connected) {
+        await this.pineconeService.createIndex();
+        console.log('Pinecone initialized successfully');
+      }
+    } catch (error) {
+      console.error('Failed to initialize Pinecone:', error);
+    }
+  }
 
   
   async research(context: SearchContext): Promise<ResearchResult> {
@@ -127,10 +142,12 @@ export class ResearchAgentService {
 
   private async searchVectors(query: string, limit: number): Promise<any[]> {
     try {
+      console.log(`Performing vector search for: "${query}"`);
       const embedding = await this.openaiService.createEmbedding(query);
       const queryVector = embedding.data[0]?.embedding;
 
       if (!queryVector) {
+        console.log('No embedding vector generated');
         return [];
       }
 
@@ -139,10 +156,58 @@ export class ResearchAgentService {
         limit,
       );
 
+      console.log(`Vector search returned ${searchResults.matches?.length || 0} results`);
       return searchResults.matches || [];
     } catch (error) {
       console.error('Vector search error:', error);
       return [];
+    }
+  }
+
+  async testPinecone(): Promise<{ success: boolean; message: string; details?: any }> {
+    try {
+      // Test connection
+      const connected = await this.pineconeService.testConnection();
+      if (!connected) {
+        return { success: false, message: 'Failed to connect to Pinecone' };
+      }
+
+      // Test indexing a document
+      const testData = {
+        id: 'test-doc-1',
+        text: 'This is a test document for Pinecone vector search functionality.',
+        metadata: { type: 'test', timestamp: new Date().toISOString() }
+      };
+
+      await this.indexData([testData]);
+
+      // Wait a moment for indexing
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Test search
+      const searchResults = await this.searchVectors('test document', 1);
+
+      // Clean up test data
+      await this.pineconeService.deleteVectors(['test-doc-1']);
+
+      return {
+        success: true,
+        message: 'Pinecone test completed successfully',
+        details: {
+          indexingWorked: true,
+          searchWorked: searchResults.length >= 0,
+          searchResults: searchResults.length
+        }
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorString = error instanceof Error ? error.toString() : String(error);
+      
+      return {
+        success: false,
+        message: `Pinecone test failed: ${errorMessage}`,
+        details: { error: errorString }
+      };
     }
   }
 

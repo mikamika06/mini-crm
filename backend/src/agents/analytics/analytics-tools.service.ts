@@ -84,7 +84,7 @@ export class AnalyticsToolsService {
       }
       
       if (result.priority.escalationRequired) {
-        description += `\n⚠️ ESCALATION REQUIRED!`;
+        description += `\n ESCALATION REQUIRED!`;
       }
       
       return {
